@@ -1,6 +1,12 @@
 [versions]
 junit = "5.9.1"
+lombok-plugin = "6.6.1"
+jb-annotations = "23.1.0"
 
 [libraries]
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+jb-annotations = { module = "org.jetbrains:annotations", version.ref = "jb-annotations" }
+
+[plugins]
+lombok = { id = "io.freefair.lombok", version.ref = "lombok-plugin" }

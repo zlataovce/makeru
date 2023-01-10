@@ -5,3 +5,8 @@ plugins {
 repositories {
     mavenCentral()
 }
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
