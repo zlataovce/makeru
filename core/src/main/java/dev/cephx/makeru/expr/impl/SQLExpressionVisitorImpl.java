@@ -191,9 +191,4 @@ public abstract class SQLExpressionVisitorImpl implements SQLStatementVisitor {
     public String toString() {
         return _builder.toString();
     }
-
-    public enum KeywordNamingStrategy {
-        LOWER_CASE,
-        UPPER_CASE
-    }
 }
