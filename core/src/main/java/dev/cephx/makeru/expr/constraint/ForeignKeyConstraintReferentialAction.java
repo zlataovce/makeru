@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 import lombok.With;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
@@ -13,13 +13,11 @@ import java.util.List;
 @Value
 @With
 @Builder
-public class UniqueConstraintSQLExpression implements MultiColumnConstraintSQLExpression {
-    @Nullable
-    String name;
+public class ForeignKeyConstraintReferentialAction {
+    @NotNull
+    ForeignKeyConstraintReferentialActionType type;
     @LimitedFeatureSupport("PostgreSQL 15")
-    @lombok.Builder.Default
-    boolean nullsDistinct = true;
     @Singular
     @Unmodifiable
-    List<String> columnNames;
+    List<String> columns;
 }

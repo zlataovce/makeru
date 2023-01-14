@@ -158,6 +158,25 @@ public abstract class SQLExpressionVisitorImpl implements SQLStatementVisitor {
         write(" (");
         write(String.join(", ", expr.getRefColumns()));
         write(")");
+
+        final ForeignKeyConstraintReferentialAction onUpdate = expr.getOnUpdate();
+        if (onUpdate != null) {
+            writeKeyword(" on update ");
+            writeKeyword(onUpdate.getType().toString());
+
+            if (!onUpdate.getColumns().isEmpty()) {
+                throw new UnsupportedOperationException("Column subset selection is not supported for the ON UPDATE foreign key referential action in standard SQL");
+            }
+        }
+        final ForeignKeyConstraintReferentialAction onDelete = expr.getOnDelete();
+        if (onDelete != null) {
+            writeKeyword(" on delete ");
+            writeKeyword(onDelete.getType().toString());
+
+            if (!onDelete.getColumns().isEmpty()) {
+                throw new UnsupportedOperationException("Column subset selection is not supported for the ON DELETE foreign key referential action in standard SQL");
+            }
+        }
     }
 
     public void visitPrimaryKeyTableConstraint(PrimaryKeyConstraintSQLExpression expr) {

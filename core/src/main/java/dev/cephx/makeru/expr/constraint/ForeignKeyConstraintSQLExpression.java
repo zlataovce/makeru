@@ -25,5 +25,8 @@ public class ForeignKeyConstraintSQLExpression implements MultiColumnConstraintS
     @Unmodifiable
     List<String> refColumns;
 
-    // TODO: referential actions
+    @Nullable
+    ForeignKeyConstraintReferentialAction onUpdate;
+    @Nullable
+    ForeignKeyConstraintReferentialAction onDelete;
 }

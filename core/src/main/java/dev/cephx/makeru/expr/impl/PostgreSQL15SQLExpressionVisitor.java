@@ -1,5 +1,6 @@
 package dev.cephx.makeru.expr.impl;
 
+import dev.cephx.makeru.expr.ConfusingConstraintException;
 import dev.cephx.makeru.expr.constraint.*;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 import org.jetbrains.annotations.Nullable;
@@ -51,6 +52,33 @@ public class PostgreSQL15SQLExpressionVisitor extends SQLExpressionVisitorImpl {
         write(" (");
         write(String.join(", ", expr.getRefColumns()));
         write(")");
+
+        final ForeignKeyConstraintReferentialAction onUpdate = expr.getOnUpdate();
+        if (onUpdate != null) {
+            writeKeyword(" on update ");
+            visitForeignKeyReferentialAction(onUpdate);
+        }
+        final ForeignKeyConstraintReferentialAction onDelete = expr.getOnDelete();
+        if (onDelete != null) {
+            writeKeyword(" on delete ");
+            visitForeignKeyReferentialAction(onDelete);
+        }
+    }
+
+    protected void visitForeignKeyReferentialAction(ForeignKeyConstraintReferentialAction action) {
+        writeKeyword(action.getType().toString());
+
+        if (!action.getColumns().isEmpty()) {
+            switch (action.getType()) {
+                case SET_NULL:
+                case SET_DEFAULT:
+                    write(" (");
+                    write(String.join(", ", action.getColumns()));
+                    write(")");
+                default:
+                    throw new ConfusingConstraintException("Column subset selection is only supported for SET NULL and SET DEFAULT foreign key referential actions");
+            }
+        }
     }
 
     public void visitPrimaryKeyColumnConstraint() {
@@ -73,5 +101,10 @@ public class PostgreSQL15SQLExpressionVisitor extends SQLExpressionVisitorImpl {
         write("(");
         write(String.join(", ", expr.getColumnNames()));
         write(")");
+    }
+
+    @Override
+    public void visitForeignKeyTableConstraint(ForeignKeyConstraintSQLExpression expr) {
+        super.visitForeignKeyTableConstraint(expr);
     }
 }
