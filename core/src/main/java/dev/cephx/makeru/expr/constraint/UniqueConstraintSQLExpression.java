@@ -16,7 +16,7 @@ import java.util.List;
 public class UniqueConstraintSQLExpression implements MultiColumnConstraintSQLExpression {
     @Nullable
     String name;
-    @LimitedFeatureSupport("PostgreSQL 15")
+    @LimitedFeatureSupport("POSTGRESQL_15")
     @lombok.Builder.Default
     boolean nullsDistinct = true;
     @Singular

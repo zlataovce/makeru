@@ -3,17 +3,16 @@ package dev.cephx.makeru.test.expr.impl;
 import dev.cephx.makeru.expr.ColumnSQLExpression;
 import dev.cephx.makeru.expr.SQLStatementVisitor;
 import dev.cephx.makeru.expr.constraint.*;
-import dev.cephx.makeru.expr.impl.KeywordNamingStrategy;
-import dev.cephx.makeru.expr.impl.PostgreSQL15SQLExpressionVisitor;
+import dev.cephx.makeru.expr.impl.PostgreSQL14SQLStatementVisitor;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PostgreSQL15SQLExpressionVisitorTest {
+public class PostgreSQL15SQLStatementVisitorTest {
     @Test
     public void createTableUpperCase() {
-        final SQLStatementVisitor v = new PostgreSQL15SQLExpressionVisitor(KeywordNamingStrategy.UPPER_CASE);
+        final SQLStatementVisitor v = new PostgreSQL14SQLStatementVisitor(SQLStatementVisitor.UPPER_CASE);
 
         // CREATE TABLE IF NOT EXISTS customers (id uuid NOT NULL PRIMARY KEY DEFAULT gen_random_uuid() REFERENCES orders
         // (customer_id), name text NOT NULL UNIQUE CHECK (char_length(name) > 3), UNIQUE (name), PRIMARY KEY (id),
@@ -56,7 +55,7 @@ public class PostgreSQL15SQLExpressionVisitorTest {
 
     @Test
     public void createTableLowerCase() {
-        final SQLStatementVisitor v = new PostgreSQL15SQLExpressionVisitor(KeywordNamingStrategy.LOWER_CASE);
+        final SQLStatementVisitor v = new PostgreSQL14SQLStatementVisitor(SQLStatementVisitor.LOWER_CASE);
 
         // create table if not exists customers (id uuid not null primary key default gen_random_uuid() references orders
         // (customer_id), name text not null unique check (char_length(name) > 3), unique (name), primary key (id),
@@ -100,7 +99,7 @@ public class PostgreSQL15SQLExpressionVisitorTest {
     @Test
     public void createTableMixedCase() {
         // this visitor implementation writes keywords in lower case by default
-        final SQLStatementVisitor v = new PostgreSQL15SQLExpressionVisitor(null);
+        final SQLStatementVisitor v = new PostgreSQL14SQLStatementVisitor(0);
 
         // create table if not exists customers (id uuid not null primary key default gen_random_uuid() references orders
         // (customer_id), name text not null unique check (char_length(name) > 3), unique (name), primary key (id),

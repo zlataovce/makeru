@@ -16,7 +16,7 @@ import java.util.List;
 public class ForeignKeyConstraintReferentialAction {
     @NotNull
     ForeignKeyConstraintReferentialActionType type;
-    @LimitedFeatureSupport("PostgreSQL 15")
+    @LimitedFeatureSupport("POSTGRESQL")
     @Singular
     @Unmodifiable
     List<String> columns;

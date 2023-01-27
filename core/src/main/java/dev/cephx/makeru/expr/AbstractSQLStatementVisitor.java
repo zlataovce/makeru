@@ -1,21 +1,16 @@
-package dev.cephx.makeru.expr.impl;
+package dev.cephx.makeru.expr;
 
-import dev.cephx.makeru.expr.ColumnSQLExpression;
-import dev.cephx.makeru.expr.ConfusingConstraintException;
-import dev.cephx.makeru.expr.SQLStatementVisitor;
-import dev.cephx.makeru.expr.StatementBaseSQLExpression;
 import dev.cephx.makeru.expr.constraint.*;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
 @RequiredArgsConstructor
-public abstract class SQLExpressionVisitorImpl implements SQLStatementVisitor {
+public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor {
     protected final StringBuilder _builder = new StringBuilder();
-    @Nullable
-    protected final KeywordNamingStrategy namingStrategy;
+    protected final int mod;
+
     protected boolean hasVisitedFirstColumn = false;
 
     protected void write(String s) {
@@ -23,10 +18,11 @@ public abstract class SQLExpressionVisitorImpl implements SQLStatementVisitor {
     }
 
     protected void writeKeyword(String s) {
-        if (namingStrategy == KeywordNamingStrategy.LOWER_CASE) {
-            _builder.append(s.toLowerCase(Locale.ROOT));
-        } else if (namingStrategy == KeywordNamingStrategy.UPPER_CASE) {
+        // upper-casing will take precedence
+        if ((mod & UPPER_CASE) != 0) {
             _builder.append(s.toUpperCase(Locale.ROOT));
+        } else if ((mod & LOWER_CASE) != 0) {
+            _builder.append(s.toLowerCase(Locale.ROOT));
         } else {
             writeKeyword0(s);
         }
@@ -48,7 +44,7 @@ public abstract class SQLExpressionVisitorImpl implements SQLStatementVisitor {
     public void visitCreateTable(CreateTableSQLExpression expr) {
         writeKeyword("create table ");
         if (expr.isIfNotExists()) {
-            throw new UnsupportedOperationException("IF NOT EXISTS in CREATE TABLE is not supported in standard SQL");
+            throw new UnsupportedOperationException("IF NOT EXISTS in CREATE TABLE is not supported in " + this.getClass().getSimpleName());
         }
         write(expr.getTableName());
     }
@@ -70,12 +66,12 @@ public abstract class SQLExpressionVisitorImpl implements SQLStatementVisitor {
     }
 
     private void checkConstraintType(ConstraintSQLExpression expr, boolean expectSingleColumn) {
-        if (expr instanceof MultiColumnConstraintSQLExpression) {
+        if ((mod & NO_VERIFY) == 0 && expr instanceof MultiColumnConstraintSQLExpression) {
             final MultiColumnConstraintSQLExpression nExpr = (MultiColumnConstraintSQLExpression) expr;
             if (expectSingleColumn && nExpr.getColumnNames().size() > 1) {
-                throw new ConfusingConstraintException("Expected a single-column constraint, multiple columns were specified: " + expr);
+                throw new AmbiguousConstraintDefinitionException("Expected a single-column constraint, multiple columns were specified: " + expr);
             } else if (!expectSingleColumn && nExpr.getColumnNames().isEmpty()) {
-                throw new ConfusingConstraintException("Expected a multi-column constraint, no columns were specified: " + expr);
+                throw new AmbiguousConstraintDefinitionException("Expected a multi-column constraint, no columns were specified: " + expr);
             }
         }
     }
@@ -165,7 +161,7 @@ public abstract class SQLExpressionVisitorImpl implements SQLStatementVisitor {
             writeKeyword(onUpdate.getType().toString());
 
             if (!onUpdate.getColumns().isEmpty()) {
-                throw new UnsupportedOperationException("Column subset selection is not supported for the ON UPDATE foreign key referential action in standard SQL");
+                throw new UnsupportedOperationException("Column subset selection is not supported for the ON UPDATE foreign key referential action in " + this.getClass().getSimpleName());
             }
         }
         final ForeignKeyConstraintReferentialAction onDelete = expr.getOnDelete();
@@ -174,7 +170,7 @@ public abstract class SQLExpressionVisitorImpl implements SQLStatementVisitor {
             writeKeyword(onDelete.getType().toString());
 
             if (!onDelete.getColumns().isEmpty()) {
-                throw new UnsupportedOperationException("Column subset selection is not supported for the ON DELETE foreign key referential action in standard SQL");
+                throw new UnsupportedOperationException("Column subset selection is not supported for the ON DELETE foreign key referential action in " + this.getClass().getSimpleName());
             }
         }
     }
@@ -188,7 +184,7 @@ public abstract class SQLExpressionVisitorImpl implements SQLStatementVisitor {
     public void visitUniqueTableConstraint(UniqueConstraintSQLExpression expr) {
         writeKeyword("unique ");
         if (!expr.isNullsDistinct()) {
-            throw new UnsupportedOperationException("NULLS NOT DISTINCT in a UNIQUE constraint is not supported in standard SQL");
+            throw new UnsupportedOperationException("NULLS NOT DISTINCT in a UNIQUE constraint is not supported in " + this.getClass().getSimpleName());
         }
         write("(");
         write(String.join(", ", expr.getColumnNames()));
