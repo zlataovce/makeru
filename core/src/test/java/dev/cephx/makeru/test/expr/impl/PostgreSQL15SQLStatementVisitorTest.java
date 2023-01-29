@@ -10,15 +10,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PostgreSQL15SQLStatementVisitorTest {
     @Test
-    public void tableNullsNotDistinct() {
+    public void tableConstraintUniqueNullsNotDistinct() {
         val v = new PostgreSQL15SQLStatementVisitor(0);
 
-        assertDoesNotThrow(() -> v.visitUniqueTableConstraint(UniqueConstraintSQLExpression.builder().nullsDistinct(false).build()));
-        assertEquals("unique nulls not distinct ()", v.toString());
+        assertDoesNotThrow(() -> v.visitUniqueTableConstraint(UniqueConstraintSQLExpression.builder().nullsDistinct(false).columnName("test").build()));
+        assertEquals("unique nulls not distinct (test)", v.toString());
     }
 
     @Test
-    public void columnNullsNotDistinct() {
+    public void columnConstraintUniqueNullsNotDistinct() {
         val v = new PostgreSQL15SQLStatementVisitor(0);
 
         assertDoesNotThrow(() -> v.visitUniqueColumnConstraint(UniqueConstraintSQLExpression.builder().nullsDistinct(false).build()));

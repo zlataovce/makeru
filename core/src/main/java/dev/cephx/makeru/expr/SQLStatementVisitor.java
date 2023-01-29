@@ -5,8 +5,9 @@ import dev.cephx.makeru.expr.constraint.TableConstraintSQLExpression;
 
 public interface SQLStatementVisitor {
     int NO_VERIFY = 0x00000001;
-    int UPPER_CASE = 0x00000002;
-    int LOWER_CASE = 0x00000004;
+    int SKIP_UNSUPPORTED = 0x00000002;
+    int UPPER_CASE = 0x00000004;
+    int LOWER_CASE = 0x00000008;
 
     boolean visit(StatementBaseSQLExpression expr);
     void visitColumns();

@@ -2,6 +2,7 @@ package dev.cephx.makeru.expr;
 
 import dev.cephx.makeru.expr.constraint.*;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
+import dev.cephx.makeru.expr.table.DropTableSQLExpression;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Locale;
@@ -37,16 +38,36 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         if (expr instanceof CreateTableSQLExpression) {
             visitCreateTable((CreateTableSQLExpression) expr);
             return true;
+        } else if (expr instanceof DropTableSQLExpression) {
+            visitDropTable((DropTableSQLExpression) expr);
+            return true;
         }
         return false;
     }
 
     public void visitCreateTable(CreateTableSQLExpression expr) {
         writeKeyword("create table ");
-        if (expr.isIfNotExists()) {
-            throw new UnsupportedOperationException("IF NOT EXISTS in CREATE TABLE is not supported in " + this.getClass().getSimpleName());
+        if ((mod & SKIP_UNSUPPORTED) == 0 && expr.isIfNotExists()) {
+            throw new UnsupportedOperationException("IF NOT EXISTS in CREATE TABLE is not supported");
         }
         write(expr.getTableName());
+    }
+
+    public void visitDropTable(DropTableSQLExpression expr) {
+        writeKeyword("drop table ");
+        if ((mod & SKIP_UNSUPPORTED) == 0 && expr.isIfExists()) {
+            throw new UnsupportedOperationException("IF EXISTS in DROP TABLE is not supported");
+        }
+        if ((mod & NO_VERIFY) == 0 && expr.getTableNames().isEmpty()) {
+            throw new InvalidExpressionDefinitionException("At least one table must be specified in DROP TABLE");
+        }
+        if ((mod & SKIP_UNSUPPORTED) == 0 && expr.getTableNames().size() > 1) {
+            throw new UnsupportedOperationException("Multiple tables in DROP TABLE are not supported");
+        }
+        write(expr.getTableNames().get(0));
+        if (expr.getAction() != null) {
+            writeKeyword(" " + expr.getAction());
+        }
     }
 
     @Override
@@ -148,10 +169,16 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
 
     public void visitForeignKeyTableConstraint(ForeignKeyConstraintSQLExpression expr) {
         writeKeyword("foreign key (");
+        if ((mod & NO_VERIFY) == 0 && expr.getColumnNames().isEmpty()) {
+            throw new InvalidExpressionDefinitionException("At least one column must be specified in FOREIGN KEY");
+        }
         write(String.join(", ", expr.getColumnNames()));
         writeKeyword(") references ");
         write(expr.getRefTable());
         write(" (");
+        if ((mod & NO_VERIFY) == 0 && expr.getRefColumns().isEmpty()) {
+            throw new InvalidExpressionDefinitionException("At least one foreign column must be specified in FOREIGN KEY");
+        }
         write(String.join(", ", expr.getRefColumns()));
         write(")");
 
@@ -160,8 +187,8 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
             writeKeyword(" on update ");
             writeKeyword(onUpdate.getType().toString());
 
-            if (!onUpdate.getColumns().isEmpty()) {
-                throw new UnsupportedOperationException("Column subset selection is not supported for the ON UPDATE foreign key referential action in " + this.getClass().getSimpleName());
+            if ((mod & SKIP_UNSUPPORTED) == 0 && !onUpdate.getColumns().isEmpty()) {
+                throw new UnsupportedOperationException("Column subset selection is not supported for ON UPDATE");
             }
         }
         final ForeignKeyConstraintReferentialAction onDelete = expr.getOnDelete();
@@ -169,24 +196,30 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
             writeKeyword(" on delete ");
             writeKeyword(onDelete.getType().toString());
 
-            if (!onDelete.getColumns().isEmpty()) {
-                throw new UnsupportedOperationException("Column subset selection is not supported for the ON DELETE foreign key referential action in " + this.getClass().getSimpleName());
+            if ((mod & SKIP_UNSUPPORTED) == 0 && !onDelete.getColumns().isEmpty()) {
+                throw new UnsupportedOperationException("Column subset selection is not supported for ON DELETE");
             }
         }
     }
 
     public void visitPrimaryKeyTableConstraint(PrimaryKeyConstraintSQLExpression expr) {
         writeKeyword("primary key (");
+        if ((mod & NO_VERIFY) == 0 && expr.getColumnNames().isEmpty()) {
+            throw new InvalidExpressionDefinitionException("At least one column must be specified in PRIMARY KEY");
+        }
         write(String.join(", ", expr.getColumnNames()));
         write(")");
     }
 
     public void visitUniqueTableConstraint(UniqueConstraintSQLExpression expr) {
         writeKeyword("unique ");
-        if (!expr.isNullsDistinct()) {
-            throw new UnsupportedOperationException("NULLS NOT DISTINCT in a UNIQUE constraint is not supported in " + this.getClass().getSimpleName());
+        if ((mod & SKIP_UNSUPPORTED) == 0 && !expr.isNullsDistinct()) {
+            throw new UnsupportedOperationException("NULLS NOT DISTINCT in UNIQUE is not supported");
         }
         write("(");
+        if ((mod & NO_VERIFY) == 0 && expr.getColumnNames().isEmpty()) {
+            throw new InvalidExpressionDefinitionException("At least one column must be specified in UNIQUE");
+        }
         write(String.join(", ", expr.getColumnNames()));
         write(")");
     }
