@@ -5,12 +5,10 @@ import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 import dev.cephx.makeru.expr.table.DropTableSQLExpression;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Locale;
-
 @RequiredArgsConstructor
 public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor {
     protected final StringBuilder _builder = new StringBuilder();
-    protected final int mod;
+    protected final StatementFormattingStrategy strategy;
 
     protected boolean hasVisitedFirstColumn = false;
 
@@ -19,11 +17,9 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
     }
 
     protected void writeKeyword(String s) {
-        // upper-casing will take precedence
-        if ((mod & UPPER_CASE) != 0) {
-            _builder.append(s.toUpperCase(Locale.ROOT));
-        } else if ((mod & LOWER_CASE) != 0) {
-            _builder.append(s.toLowerCase(Locale.ROOT));
+        final String formatted = strategy.formatKeyword(s);
+        if (formatted != null) {
+            _builder.append(formatted);
         } else {
             writeKeyword0(s);
         }
@@ -47,7 +43,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
 
     public void visitCreateTable(CreateTableSQLExpression expr) {
         writeKeyword("create table ");
-        if ((mod & SKIP_UNSUPPORTED) == 0 && expr.isIfNotExists()) {
+        if (!strategy.skipUnsupported() && expr.isIfNotExists()) {
             throw new UnsupportedOperationException("IF NOT EXISTS in CREATE TABLE is not supported");
         }
         write(expr.getTableName());
@@ -55,13 +51,13 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
 
     public void visitDropTable(DropTableSQLExpression expr) {
         writeKeyword("drop table ");
-        if ((mod & SKIP_UNSUPPORTED) == 0 && expr.isIfExists()) {
+        if (!strategy.skipUnsupported() && expr.isIfExists()) {
             throw new UnsupportedOperationException("IF EXISTS in DROP TABLE is not supported");
         }
-        if ((mod & NO_VERIFY) == 0 && expr.getTableNames().isEmpty()) {
+        if (expr.getTableNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one table must be specified in DROP TABLE");
         }
-        if ((mod & SKIP_UNSUPPORTED) == 0 && expr.getTableNames().size() > 1) {
+        if (!strategy.skipUnsupported() && expr.getTableNames().size() > 1) {
             throw new UnsupportedOperationException("Multiple tables in DROP TABLE are not supported");
         }
         write(expr.getTableNames().get(0));
@@ -87,7 +83,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
     }
 
     private void checkConstraintType(ConstraintSQLExpression expr, boolean expectSingleColumn) {
-        if ((mod & NO_VERIFY) == 0 && expr instanceof MultiColumnConstraintSQLExpression) {
+        if (expr instanceof MultiColumnConstraintSQLExpression) {
             final MultiColumnConstraintSQLExpression nExpr = (MultiColumnConstraintSQLExpression) expr;
             if (expectSingleColumn && nExpr.getColumnNames().size() > 1) {
                 throw new AmbiguousConstraintDefinitionException("Expected a single-column constraint, multiple columns were specified: " + expr);
@@ -169,14 +165,14 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
 
     public void visitForeignKeyTableConstraint(ForeignKeyConstraintSQLExpression expr) {
         writeKeyword("foreign key (");
-        if ((mod & NO_VERIFY) == 0 && expr.getColumnNames().isEmpty()) {
+        if (expr.getColumnNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one column must be specified in FOREIGN KEY");
         }
         write(String.join(", ", expr.getColumnNames()));
         writeKeyword(") references ");
         write(expr.getRefTable());
         write(" (");
-        if ((mod & NO_VERIFY) == 0 && expr.getRefColumns().isEmpty()) {
+        if (expr.getRefColumns().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one foreign column must be specified in FOREIGN KEY");
         }
         write(String.join(", ", expr.getRefColumns()));
@@ -187,7 +183,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
             writeKeyword(" on update ");
             writeKeyword(onUpdate.getType().toString());
 
-            if ((mod & SKIP_UNSUPPORTED) == 0 && !onUpdate.getColumns().isEmpty()) {
+            if (!strategy.skipUnsupported() && !onUpdate.getColumns().isEmpty()) {
                 throw new UnsupportedOperationException("Column subset selection is not supported for ON UPDATE");
             }
         }
@@ -196,7 +192,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
             writeKeyword(" on delete ");
             writeKeyword(onDelete.getType().toString());
 
-            if ((mod & SKIP_UNSUPPORTED) == 0 && !onDelete.getColumns().isEmpty()) {
+            if (!strategy.skipUnsupported() && !onDelete.getColumns().isEmpty()) {
                 throw new UnsupportedOperationException("Column subset selection is not supported for ON DELETE");
             }
         }
@@ -204,7 +200,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
 
     public void visitPrimaryKeyTableConstraint(PrimaryKeyConstraintSQLExpression expr) {
         writeKeyword("primary key (");
-        if ((mod & NO_VERIFY) == 0 && expr.getColumnNames().isEmpty()) {
+        if (expr.getColumnNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one column must be specified in PRIMARY KEY");
         }
         write(String.join(", ", expr.getColumnNames()));
@@ -213,11 +209,11 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
 
     public void visitUniqueTableConstraint(UniqueConstraintSQLExpression expr) {
         writeKeyword("unique ");
-        if ((mod & SKIP_UNSUPPORTED) == 0 && !expr.isNullsDistinct()) {
+        if (!strategy.skipUnsupported() && !expr.isNullsDistinct()) {
             throw new UnsupportedOperationException("NULLS NOT DISTINCT in UNIQUE is not supported");
         }
         write("(");
-        if ((mod & NO_VERIFY) == 0 && expr.getColumnNames().isEmpty()) {
+        if (expr.getColumnNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one column must be specified in UNIQUE");
         }
         write(String.join(", ", expr.getColumnNames()));

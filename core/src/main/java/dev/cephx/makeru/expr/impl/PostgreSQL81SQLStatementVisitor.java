@@ -3,22 +3,23 @@ package dev.cephx.makeru.expr.impl;
 import dev.cephx.makeru.expr.AmbiguousConstraintDefinitionException;
 import dev.cephx.makeru.expr.AbstractSQLStatementVisitor;
 import dev.cephx.makeru.expr.InvalidExpressionDefinitionException;
+import dev.cephx.makeru.expr.StatementFormattingStrategy;
 import dev.cephx.makeru.expr.constraint.*;
 import dev.cephx.makeru.expr.table.DropTableSQLExpression;
 
 public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor {
-    public PostgreSQL81SQLStatementVisitor(int mod) {
-        super(mod);
+    public PostgreSQL81SQLStatementVisitor(StatementFormattingStrategy strategy) {
+        super(strategy);
     }
 
     // support multiple tables
     @Override
     public void visitDropTable(DropTableSQLExpression expr) {
         writeKeyword("drop table ");
-        if ((mod & SKIP_UNSUPPORTED) == 0 && expr.isIfExists()) {
+        if (!strategy.skipUnsupported() && expr.isIfExists()) {
             throw new UnsupportedOperationException("IF EXISTS in DROP TABLE is not supported");
         }
-        if ((mod & NO_VERIFY) == 0 && expr.getTableNames().isEmpty()) {
+        if (expr.getTableNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one table must be specified in DROP TABLE");
         }
         write(String.join(", ", expr.getTableNames()));
@@ -59,7 +60,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
         writeKeyword(" references ");
         write(expr.getRefTable());
         write(" (");
-        if ((mod & NO_VERIFY) == 0 && expr.getRefColumns().isEmpty()) {
+        if (expr.getRefColumns().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one foreign column must be specified in FOREIGN KEY");
         }
         write(String.join(", ", expr.getRefColumns()));
@@ -88,7 +89,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
                     write(String.join(", ", action.getColumns()));
                     write(")");
                 default:
-                    if ((mod & SKIP_UNSUPPORTED) == 0) {
+                    if (!strategy.skipUnsupported()) {
                         throw new AmbiguousConstraintDefinitionException("Column subset selection is only supported for SET NULL and SET DEFAULT");
                     }
             }
@@ -101,7 +102,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
 
     public void visitUniqueColumnConstraint(UniqueConstraintSQLExpression expr) {
         writeKeyword(" unique");
-        if ((mod & SKIP_UNSUPPORTED) == 0 && !expr.isNullsDistinct()) {
+        if (!strategy.skipUnsupported() && !expr.isNullsDistinct()) {
             throw new UnsupportedOperationException("NULLS NOT DISTINCT in UNIQUE is not supported");
         }
     }
@@ -110,14 +111,14 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
     @Override
     public void visitForeignKeyTableConstraint(ForeignKeyConstraintSQLExpression expr) {
         writeKeyword("foreign key (");
-        if ((mod & NO_VERIFY) == 0 && expr.getColumnNames().isEmpty()) {
+        if (expr.getColumnNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one column must be specified in FOREIGN KEY");
         }
         write(String.join(", ", expr.getColumnNames()));
         writeKeyword(") references ");
         write(expr.getRefTable());
         write(" (");
-        if ((mod & NO_VERIFY) == 0 && expr.getRefColumns().isEmpty()) {
+        if (expr.getRefColumns().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one foreign column must be specified in FOREIGN KEY");
         }
         write(String.join(", ", expr.getRefColumns()));

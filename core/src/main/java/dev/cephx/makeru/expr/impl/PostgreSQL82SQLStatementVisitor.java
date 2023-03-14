@@ -1,11 +1,12 @@
 package dev.cephx.makeru.expr.impl;
 
 import dev.cephx.makeru.expr.InvalidExpressionDefinitionException;
+import dev.cephx.makeru.expr.StatementFormattingStrategy;
 import dev.cephx.makeru.expr.table.DropTableSQLExpression;
 
 public class PostgreSQL82SQLStatementVisitor extends PostgreSQL81SQLStatementVisitor {
-    public PostgreSQL82SQLStatementVisitor(int mod) {
-        super(mod);
+    public PostgreSQL82SQLStatementVisitor(StatementFormattingStrategy strategy) {
+        super(strategy);
     }
 
     // support IF EXISTS
@@ -15,7 +16,7 @@ public class PostgreSQL82SQLStatementVisitor extends PostgreSQL81SQLStatementVis
         if (expr.isIfExists()) {
             writeKeyword("if exists ");
         }
-        if ((mod & NO_VERIFY) == 0 && expr.getTableNames().isEmpty()) {
+        if (expr.getTableNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one table must be specified in DROP TABLE");
         }
         write(String.join(", ", expr.getTableNames()));

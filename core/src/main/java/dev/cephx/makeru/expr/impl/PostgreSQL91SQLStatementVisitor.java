@@ -1,10 +1,11 @@
 package dev.cephx.makeru.expr.impl;
 
+import dev.cephx.makeru.expr.StatementFormattingStrategy;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 
 public class PostgreSQL91SQLStatementVisitor extends PostgreSQL90SQLStatementVisitor {
-    public PostgreSQL91SQLStatementVisitor(int mod) {
-        super(mod);
+    public PostgreSQL91SQLStatementVisitor(StatementFormattingStrategy strategy) {
+        super(strategy);
     }
 
     // support IF NOT EXISTS

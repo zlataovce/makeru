@@ -2,6 +2,7 @@ package dev.cephx.makeru.test.expr.impl;
 
 import dev.cephx.makeru.expr.ColumnSQLExpression;
 import dev.cephx.makeru.expr.SQLStatementVisitor;
+import dev.cephx.makeru.expr.StatementFormattingStrategies;
 import dev.cephx.makeru.expr.constraint.*;
 import dev.cephx.makeru.expr.impl.PostgreSQL81SQLStatementVisitor;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PostgreSQL81SQLStatementVisitorTest {
     @Test
     public void createTableUpperCase() {
-        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(SQLStatementVisitor.UPPER_CASE);
+        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.UPPER_CASE);
 
         // CREATE TABLE customers (id uuid NOT NULL PRIMARY KEY DEFAULT gen_random_uuid() REFERENCES orders
         // (customer_id), name text NOT NULL UNIQUE CHECK (char_length(name) > 3), UNIQUE (name), PRIMARY KEY (id),
@@ -57,7 +58,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
 
     @Test
     public void createTableLowerCase() {
-        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(SQLStatementVisitor.LOWER_CASE);
+        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.LOWER_CASE);
 
         // create table customers (id uuid not null primary key default gen_random_uuid() references orders
         // (customer_id), name text not null unique check (char_length(name) > 3), unique (name), primary key (id),
@@ -101,7 +102,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
     @Test
     public void createTableMixedCase() {
         // this visitor implementation writes keywords in lower case by default
-        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(0);
+        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.DEFAULT);
 
         // create table customers (id uuid not null primary key default gen_random_uuid() references orders
         // (customer_id), name text not null unique check (char_length(name) > 3), unique (name), primary key (id),
@@ -144,7 +145,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
 
     @Test
     public void dropTableUpperCase() {
-        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(SQLStatementVisitor.UPPER_CASE);
+        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.UPPER_CASE);
 
         // DROP TABLE customers RESTRICT;
         v.visit(DropTableSQLExpression.builder().tableName("customers").action(DropTableSQLExpression.Action.RESTRICT).build());
@@ -155,7 +156,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
 
     @Test
     public void dropTableLowerCase() {
-        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(SQLStatementVisitor.LOWER_CASE);
+        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.LOWER_CASE);
 
         // drop table customers restrict;
         v.visit(DropTableSQLExpression.builder().tableName("customers").action(DropTableSQLExpression.Action.RESTRICT).build());
@@ -167,7 +168,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
     @Test
     public void dropTableMixedCase() {
         // this visitor implementation writes keywords in lower case by default
-        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(0);
+        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.DEFAULT);
 
         // drop table customers restrict;
         v.visit(DropTableSQLExpression.builder().tableName("customers").action(DropTableSQLExpression.Action.RESTRICT).build());
@@ -178,7 +179,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
 
     @Test
     public void tableConstraintUniqueNullsNotDistinct() {
-        val v = new PostgreSQL81SQLStatementVisitor(0);
+        val v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.DEFAULT);
 
         assertThrows(
                 UnsupportedOperationException.class,
@@ -188,7 +189,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
 
     @Test
     public void columnConstraintUniqueNullsNotDistinct() {
-        val v = new PostgreSQL81SQLStatementVisitor(0);
+        val v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.DEFAULT);
 
         assertThrows(
                 UnsupportedOperationException.class,
@@ -198,7 +199,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
 
     @Test
     public void createTableIfNotExists() {
-        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(0);
+        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.DEFAULT);
 
         assertThrows(
                 UnsupportedOperationException.class,
@@ -208,7 +209,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
 
     @Test
     public void dropTableIfExists() {
-        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(0);
+        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.DEFAULT);
 
         assertThrows(
                 UnsupportedOperationException.class,
@@ -218,7 +219,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
 
     @Test
     public void dropTableMultipleTables() {
-        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(0);
+        final SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.DEFAULT);
 
         assertDoesNotThrow(() -> v.visit(DropTableSQLExpression.builder().tableName("customers").tableName("customers2").build()));
     }
