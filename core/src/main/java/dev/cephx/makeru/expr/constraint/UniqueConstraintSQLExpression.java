@@ -12,11 +12,11 @@ import java.util.List;
 
 @Value
 @With
-@Builder
+@Builder(toBuilder = true)
 public class UniqueConstraintSQLExpression implements MultiColumnConstraintSQLExpression {
     @Nullable
     String name;
-    @LimitedFeatureSupport("POSTGRESQL_15")
+    @LimitedFeatureSupport(platform = "POSTGRESQL", since = "15")
     @lombok.Builder.Default
     boolean nullsDistinct = true;
     @Singular

@@ -4,7 +4,7 @@ import dev.cephx.makeru.expr.InvalidExpressionDefinitionException;
 import dev.cephx.makeru.expr.StatementFormattingStrategy;
 import dev.cephx.makeru.expr.constraint.UniqueConstraintSQLExpression;
 
-public class PostgreSQL15SQLStatementVisitor extends PostgreSQL14SQLStatementVisitor {
+public class PostgreSQL15SQLStatementVisitor extends PostgreSQL91SQLStatementVisitor {
     public PostgreSQL15SQLStatementVisitor(StatementFormattingStrategy strategy) {
         super(strategy);
     }

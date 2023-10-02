@@ -1,7 +1,6 @@
 package dev.cephx.makeru.expr.impl;
 
 import dev.cephx.makeru.expr.AmbiguousConstraintDefinitionException;
-import dev.cephx.makeru.expr.AbstractSQLStatementVisitor;
 import dev.cephx.makeru.expr.InvalidExpressionDefinitionException;
 import dev.cephx.makeru.expr.StatementFormattingStrategy;
 import dev.cephx.makeru.expr.constraint.*;
@@ -66,19 +65,19 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
         write(String.join(", ", expr.getRefColumns()));
         write(")");
 
-        final ForeignKeyConstraintReferentialAction onUpdate = expr.getOnUpdate();
+        final ForeignKeyConstraintSQLExpression.ReferentialAction onUpdate = expr.getOnUpdate();
         if (onUpdate != null) {
             writeKeyword(" on update ");
             visitForeignKeyReferentialAction(onUpdate);
         }
-        final ForeignKeyConstraintReferentialAction onDelete = expr.getOnDelete();
+        final ForeignKeyConstraintSQLExpression.ReferentialAction onDelete = expr.getOnDelete();
         if (onDelete != null) {
             writeKeyword(" on delete ");
             visitForeignKeyReferentialAction(onDelete);
         }
     }
 
-    protected void visitForeignKeyReferentialAction(ForeignKeyConstraintReferentialAction action) {
+    protected void visitForeignKeyReferentialAction(ForeignKeyConstraintSQLExpression.ReferentialAction action) {
         writeKeyword(action.getType().toString());
 
         if (!action.getColumns().isEmpty()) {
@@ -124,7 +123,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
         write(String.join(", ", expr.getRefColumns()));
         write(")");
 
-        final ForeignKeyConstraintReferentialAction onUpdate = expr.getOnUpdate();
+        final ForeignKeyConstraintSQLExpression.ReferentialAction onUpdate = expr.getOnUpdate();
         if (onUpdate != null) {
             writeKeyword(" on update ");
             writeKeyword(onUpdate.getType().toString());
@@ -135,7 +134,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
                 write(")");
             }
         }
-        final ForeignKeyConstraintReferentialAction onDelete = expr.getOnDelete();
+        final ForeignKeyConstraintSQLExpression.ReferentialAction onDelete = expr.getOnDelete();
         if (onDelete != null) {
             writeKeyword(" on delete ");
             writeKeyword(onDelete.getType().toString());

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Value
 @With
-@Builder
+@Builder(toBuilder = true)
 public class CheckConstraintSQLExpression implements ColumnConstraintSQLExpression, TableConstraintSQLExpression {
     @Nullable
     String name;

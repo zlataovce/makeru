@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Value
 @With
-@Builder
+@Builder(toBuilder = true)
 public class DefaultConstraintSQLExpression implements ColumnConstraintSQLExpression {
     @NotNull
     String expression;

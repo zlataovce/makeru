@@ -11,7 +11,7 @@ import java.util.List;
 
 @Value
 @With
-@Builder
+@Builder(toBuilder = true)
 public class PrimaryKeyConstraintSQLExpression implements MultiColumnConstraintSQLExpression {
     @Nullable
     String name;

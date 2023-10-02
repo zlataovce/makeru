@@ -1,5 +1,6 @@
-package dev.cephx.makeru.expr;
+package dev.cephx.makeru.expr.impl;
 
+import dev.cephx.makeru.expr.*;
 import dev.cephx.makeru.expr.constraint.*;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 import dev.cephx.makeru.expr.table.DropTableSQLExpression;
@@ -178,7 +179,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         write(String.join(", ", expr.getRefColumns()));
         write(")");
 
-        final ForeignKeyConstraintReferentialAction onUpdate = expr.getOnUpdate();
+        final ForeignKeyConstraintSQLExpression.ReferentialAction onUpdate = expr.getOnUpdate();
         if (onUpdate != null) {
             writeKeyword(" on update ");
             writeKeyword(onUpdate.getType().toString());
@@ -187,7 +188,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
                 throw new UnsupportedOperationException("Column subset selection is not supported for ON UPDATE");
             }
         }
-        final ForeignKeyConstraintReferentialAction onDelete = expr.getOnDelete();
+        final ForeignKeyConstraintSQLExpression.ReferentialAction onDelete = expr.getOnDelete();
         if (onDelete != null) {
             writeKeyword(" on delete ");
             writeKeyword(onDelete.getType().toString());

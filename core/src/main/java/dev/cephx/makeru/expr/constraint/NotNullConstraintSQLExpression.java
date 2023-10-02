@@ -6,6 +6,6 @@ import lombok.With;
 
 @Value
 @With
-@Builder
+@Builder(toBuilder = true)
 public class NotNullConstraintSQLExpression implements ColumnConstraintSQLExpression {
 }

@@ -1,6 +1,6 @@
 package dev.cephx.makeru.test.expr.impl;
 
-import dev.cephx.makeru.expr.AbstractSQLStatementVisitor;
+import dev.cephx.makeru.expr.impl.AbstractSQLStatementVisitor;
 import dev.cephx.makeru.expr.SQLStatementVisitor;
 import dev.cephx.makeru.expr.StatementFormattingStrategies;
 import dev.cephx.makeru.expr.table.DropTableSQLExpression;

@@ -1,5 +1,5 @@
 plugins {
-    id("makeru.test")
+    id("makeru.test-conventions")
     alias(libs.plugins.lombok)
 }
 

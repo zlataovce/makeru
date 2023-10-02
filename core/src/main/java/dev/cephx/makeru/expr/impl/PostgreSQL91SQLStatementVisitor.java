@@ -3,7 +3,7 @@ package dev.cephx.makeru.expr.impl;
 import dev.cephx.makeru.expr.StatementFormattingStrategy;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 
-public class PostgreSQL91SQLStatementVisitor extends PostgreSQL90SQLStatementVisitor {
+public class PostgreSQL91SQLStatementVisitor extends PostgreSQL82SQLStatementVisitor {
     public PostgreSQL91SQLStatementVisitor(StatementFormattingStrategy strategy) {
         super(strategy);
     }
