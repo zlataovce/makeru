@@ -1,10 +1,10 @@
-package dev.cephx.makeru.test.expr.impl;
+package dev.cephx.makeru.test.dialect.postgresql.expr;
 
+import dev.cephx.makeru.dialect.postgresql.expr.PostgreSQL81SQLStatementVisitor;
 import dev.cephx.makeru.expr.ColumnSQLExpression;
 import dev.cephx.makeru.expr.SQLStatementVisitor;
 import dev.cephx.makeru.expr.StatementFormattingStrategies;
 import dev.cephx.makeru.expr.constraint.*;
-import dev.cephx.makeru.expr.impl.PostgreSQL81SQLStatementVisitor;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 import dev.cephx.makeru.expr.table.DropTableSQLExpression;
 import lombok.val;

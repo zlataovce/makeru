@@ -12,6 +12,22 @@ repositories {
 java {
     withSourcesJar()
     withJavadocJar()
+
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
+
+// expose version catalog
+val libs = the<org.gradle.accessors.dm.LibrariesForLibs>()
+
+dependencies {
+    testImplementation(libs.junit.api)
+    testRuntimeOnly(libs.junit.engine)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 val versionRegex = "^[0-9,.v-]+(-r)?$".toRegex()

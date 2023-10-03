@@ -1,6 +1,5 @@
-package dev.cephx.makeru.expr.impl;
+package dev.cephx.makeru.expr;
 
-import dev.cephx.makeru.expr.*;
 import dev.cephx.makeru.expr.constraint.*;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 import dev.cephx.makeru.expr.table.DropTableSQLExpression;
@@ -22,11 +21,11 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         if (formatted != null) {
             _builder.append(formatted);
         } else {
-            writeKeyword0(s);
+            writeKeywordDatabaseDependent(s);
         }
     }
 
-    protected void writeKeyword0(String s) {
+    protected void writeKeywordDatabaseDependent(String s) {
         _builder.append(s);
     }
 

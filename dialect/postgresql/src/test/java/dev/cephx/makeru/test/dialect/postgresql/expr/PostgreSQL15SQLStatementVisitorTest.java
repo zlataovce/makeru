@@ -1,8 +1,8 @@
-package dev.cephx.makeru.test.expr.impl;
+package dev.cephx.makeru.test.dialect.postgresql.expr;
 
+import dev.cephx.makeru.dialect.postgresql.expr.PostgreSQL15SQLStatementVisitor;
 import dev.cephx.makeru.expr.StatementFormattingStrategies;
 import dev.cephx.makeru.expr.constraint.UniqueConstraintSQLExpression;
-import dev.cephx.makeru.expr.impl.PostgreSQL15SQLStatementVisitor;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 

@@ -1,8 +1,8 @@
-package dev.cephx.makeru.test.expr.impl;
+package dev.cephx.makeru.test.dialect.postgresql.expr;
 
+import dev.cephx.makeru.dialect.postgresql.expr.PostgreSQL91SQLStatementVisitor;
 import dev.cephx.makeru.expr.SQLStatementVisitor;
 import dev.cephx.makeru.expr.StatementFormattingStrategies;
-import dev.cephx.makeru.expr.impl.PostgreSQL91SQLStatementVisitor;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 import org.junit.jupiter.api.Test;
 

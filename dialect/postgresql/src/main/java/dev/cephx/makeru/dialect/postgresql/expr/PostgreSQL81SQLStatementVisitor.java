@@ -1,5 +1,6 @@
-package dev.cephx.makeru.expr.impl;
+package dev.cephx.makeru.dialect.postgresql.expr;
 
+import dev.cephx.makeru.expr.AbstractSQLStatementVisitor;
 import dev.cephx.makeru.expr.AmbiguousConstraintDefinitionException;
 import dev.cephx.makeru.expr.InvalidExpressionDefinitionException;
 import dev.cephx.makeru.expr.StatementFormattingStrategy;

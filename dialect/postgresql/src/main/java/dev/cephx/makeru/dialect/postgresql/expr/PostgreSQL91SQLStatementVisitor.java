@@ -1,4 +1,4 @@
-package dev.cephx.makeru.expr.impl;
+package dev.cephx.makeru.dialect.postgresql.expr;
 
 import dev.cephx.makeru.expr.StatementFormattingStrategy;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
