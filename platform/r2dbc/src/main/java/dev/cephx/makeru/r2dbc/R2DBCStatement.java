@@ -3,7 +3,7 @@ package dev.cephx.makeru.r2dbc;
 import dev.cephx.makeru.reactor.ReactiveStatement;
 import lombok.Data;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 @Data
 public class R2DBCStatement implements ReactiveStatement<R2DBCResult> {
@@ -29,6 +29,6 @@ public class R2DBCStatement implements ReactiveStatement<R2DBCResult> {
 
     @Override
     public Publisher<R2DBCResult> execute() {
-        return Mono.from(statement.execute()).map(R2DBCResult::new);
+        return Flux.from(statement.execute()).map(R2DBCResult::new);
     }
 }
