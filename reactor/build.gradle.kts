@@ -4,8 +4,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":reactor"))
-    api(libs.r2dbc.spi)
-    implementation(libs.reactor.core)
+    api(project(":core"))
+    api(libs.reactive.streams)
     compileOnly(libs.jb.annotations)
 }

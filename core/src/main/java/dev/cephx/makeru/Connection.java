@@ -2,7 +2,9 @@ package dev.cephx.makeru;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface Connection<C> extends Closeable<C> {
+import java.io.Closeable;
+
+public interface Connection extends Closeable {
     @NotNull
-    Statement createStatement(@NotNull String sql);
+    Statement<? extends Result<? extends Row>> createStatement(@NotNull String sql);
 }

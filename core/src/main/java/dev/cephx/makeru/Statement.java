@@ -2,12 +2,12 @@ package dev.cephx.makeru;
 
 import org.jetbrains.annotations.Contract;
 
-public interface Statement {
+public interface Statement<R> {
     @Contract("-> this")
-    Statement add();
+    Statement<R> add();
     @Contract("_, _ -> this")
-    Statement bind(int index, Object value);
+    Statement<R> bind(int index, Object value);
     @Contract("_, _ -> this")
-    Statement bindNull(int index, Class<?> type);
-    Result execute();
+    Statement<R> bindNull(int index, Class<?> type);
+    R execute();
 }
