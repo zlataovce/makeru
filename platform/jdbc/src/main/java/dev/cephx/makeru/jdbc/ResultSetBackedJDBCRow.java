@@ -1,56 +1,116 @@
 package dev.cephx.makeru.jdbc;
 
 import dev.cephx.makeru.Row;
-import lombok.Data;
-import lombok.SneakyThrows;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Objects;
 
-@Data
+import static dev.cephx.makeru.jdbc.util.ExceptionUtil.sneakyThrow;
+
 public class ResultSetBackedJDBCRow implements Row {
     private final ResultSet resultSet;
     private final int id;
 
-    @SneakyThrows
-    public ResultSetBackedJDBCRow(ResultSet resultSet) {
+    public ResultSetBackedJDBCRow(@NotNull ResultSet resultSet) {
+        int id = -1; // always set
+        try {
+            id = resultSet.getRow();
+        } catch (SQLException e) {
+            sneakyThrow(e);
+        }
+
         this.resultSet = resultSet;
-        this.id = resultSet.getRow();
+        this.id = id;
     }
 
     @Override
-    @SneakyThrows
     public @Nullable Object get(int index) {
-        checkCursor();
-        return resultSet.getObject(index);
+        try {
+            checkCursor();
+
+            return resultSet.getObject(index);
+        } catch (SQLException e) {
+            sneakyThrow(e);
+        }
+
+        return null; // unreachable
     }
 
     @Override
-    @SneakyThrows
     public <T> @Nullable T get(int index, Class<T> type) {
-        checkCursor();
-        return resultSet.getObject(index, type);
+        try {
+            checkCursor();
+
+            return resultSet.getObject(index, type);
+        } catch (SQLException e) {
+            sneakyThrow(e);
+        }
+
+        return null; // unreachable
     }
 
     @Override
-    @SneakyThrows
     public @Nullable Object get(String name) {
-        checkCursor();
-        return resultSet.getObject(name);
+        try {
+            checkCursor();
+
+            return resultSet.getObject(name);
+        } catch (SQLException e) {
+            sneakyThrow(e);
+        }
+
+        return null; // unreachable
     }
 
     @Override
-    @SneakyThrows
     public <T> @Nullable T get(String name, Class<T> type) {
-        checkCursor();
-        return resultSet.getObject(name, type);
+        try {
+            checkCursor();
+
+            return resultSet.getObject(name, type);
+        } catch (SQLException e) {
+            sneakyThrow(e);
+        }
+
+        return null; // unreachable
     }
 
-    @SneakyThrows
-    private void checkCursor() {
+    private void checkCursor() throws SQLException {
         final int currentRow = resultSet.getRow();
         if (currentRow != id) {
             throw new IllegalStateException("Cursor is not at this row (expected id " + id + ", got " + currentRow + ")");
         }
+    }
+
+    public @NotNull ResultSet getResultSet() {
+        return this.resultSet;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResultSetBackedJDBCRow that = (ResultSetBackedJDBCRow) o;
+        return id == that.id && Objects.equals(resultSet, that.resultSet);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(resultSet, id);
+    }
+
+    @Override
+    public String toString() {
+        return "ResultSetBackedJDBCRow{" +
+                "resultSet=" + resultSet +
+                ", id=" + id +
+                '}';
     }
 }
