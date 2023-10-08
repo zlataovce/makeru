@@ -6,6 +6,7 @@ import dev.cephx.makeru.expr.InvalidExpressionDefinitionException;
 import dev.cephx.makeru.expr.StatementFormattingStrategy;
 import dev.cephx.makeru.expr.constraint.*;
 import dev.cephx.makeru.expr.table.DropTableSQLExpression;
+import org.jetbrains.annotations.NotNull;
 
 public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor {
     public PostgreSQL81SQLStatementVisitor(StatementFormattingStrategy strategy) {
@@ -30,7 +31,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
 
     // support more column constraints
     @Override
-    public boolean visitColumnConstraint(ColumnConstraintSQLExpression expr) {
+    public boolean visitColumnConstraint(@NotNull ColumnConstraintSQLExpression expr) {
         if (super.visitColumnConstraint(expr)) {
             return true;
         }

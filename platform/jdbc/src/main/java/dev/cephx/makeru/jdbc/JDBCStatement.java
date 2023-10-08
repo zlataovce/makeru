@@ -17,7 +17,7 @@ public class JDBCStatement implements Statement<JDBCResult> {
     }
 
     @Override
-    public JDBCStatement add() {
+    public @NotNull JDBCStatement add() {
         try {
             preparedStatement.addBatch();
         } catch (SQLException e) {
@@ -27,7 +27,7 @@ public class JDBCStatement implements Statement<JDBCResult> {
     }
 
     @Override
-    public JDBCStatement bind(int index, Object value) {
+    public @NotNull JDBCStatement bind(int index, @NotNull Object value) {
         try {
             preparedStatement.setObject(index, value);
         } catch (SQLException e) {
@@ -37,7 +37,7 @@ public class JDBCStatement implements Statement<JDBCResult> {
     }
 
     @Override
-    public JDBCStatement bindNull(int index, Class<?> type) {
+    public @NotNull JDBCStatement bindNull(int index, @NotNull Class<?> type) {
         // TODO: use setNull
         try {
             preparedStatement.setObject(index, null);

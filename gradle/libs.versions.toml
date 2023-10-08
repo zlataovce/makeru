@@ -9,6 +9,3 @@ reactive-streams = { group = "org.reactivestreams", name = "reactive-streams", v
 reactor-core = { group = "io.projectreactor", name = "reactor-core", version = "3.5.10" }
 jb-annotations = { group = "org.jetbrains", name = "annotations", version = "24.0.1" }
 build-gradle-versions = { group = "com.github.ben-manes", name = "gradle-versions-plugin", version = "0.46.0" }
-
-[plugins]
-lombok = { id = "io.freefair.lombok", version = "8.3" }

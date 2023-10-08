@@ -2,13 +2,14 @@ package dev.cephx.makeru.expr;
 
 import dev.cephx.makeru.expr.constraint.ColumnConstraintSQLExpression;
 import dev.cephx.makeru.expr.constraint.TableConstraintSQLExpression;
+import org.jetbrains.annotations.NotNull;
 
 public interface SQLStatementVisitor {
-    boolean visit(StatementBaseSQLExpression expr);
+    boolean visit(@NotNull StatementBaseSQLExpression expr);
     void visitColumns();
-    void visitColumn(ColumnSQLExpression expr);
-    boolean visitColumnConstraint(ColumnConstraintSQLExpression expr);
-    boolean visitTableConstraint(TableConstraintSQLExpression expr);
+    void visitColumn(@NotNull ColumnSQLExpression expr);
+    boolean visitColumnConstraint(@NotNull ColumnConstraintSQLExpression expr);
+    boolean visitTableConstraint(@NotNull TableConstraintSQLExpression expr);
     void visitColumnsEnd();
     void visitEnd();
 }

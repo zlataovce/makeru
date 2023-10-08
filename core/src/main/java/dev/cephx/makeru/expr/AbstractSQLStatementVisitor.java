@@ -3,14 +3,17 @@ package dev.cephx.makeru.expr;
 import dev.cephx.makeru.expr.constraint.*;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 import dev.cephx.makeru.expr.table.DropTableSQLExpression;
-import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
-@RequiredArgsConstructor
 public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor {
     protected final StringBuilder _builder = new StringBuilder();
     protected final StatementFormattingStrategy strategy;
 
     protected boolean hasVisitedFirstColumn = false;
+
+    public AbstractSQLStatementVisitor(StatementFormattingStrategy strategy) {
+        this.strategy = strategy;
+    }
 
     protected void write(String s) {
         _builder.append(s);
@@ -30,7 +33,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
     }
 
     @Override
-    public boolean visit(StatementBaseSQLExpression expr) {
+    public boolean visit(@NotNull StatementBaseSQLExpression expr) {
         if (expr instanceof CreateTableSQLExpression) {
             visitCreateTable((CreateTableSQLExpression) expr);
             return true;
@@ -72,7 +75,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
     }
 
     @Override
-    public void visitColumn(ColumnSQLExpression expr) {
+    public void visitColumn(@NotNull ColumnSQLExpression expr) {
         if (hasVisitedFirstColumn) {
             write(", ");
         }
@@ -94,7 +97,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
     }
 
     @Override
-    public boolean visitColumnConstraint(ColumnConstraintSQLExpression expr) {
+    public boolean visitColumnConstraint(@NotNull ColumnConstraintSQLExpression expr) {
         checkConstraintType(expr, true);
         if (expr instanceof DefaultConstraintSQLExpression) {
             visitDefaultColumnConstraint((DefaultConstraintSQLExpression) expr);
@@ -116,7 +119,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
     }
 
     @Override
-    public boolean visitTableConstraint(TableConstraintSQLExpression expr) {
+    public boolean visitTableConstraint(@NotNull TableConstraintSQLExpression expr) {
         checkConstraintType(expr, false);
         if (expr instanceof CheckConstraintSQLExpression) {
             visitTableConstraintPrefix(expr);

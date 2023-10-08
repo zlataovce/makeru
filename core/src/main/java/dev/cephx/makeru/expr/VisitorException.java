@@ -1,7 +1,19 @@
 package dev.cephx.makeru.expr;
 
-import lombok.experimental.StandardException;
-
-@StandardException
 public class VisitorException extends RuntimeException {
+    public VisitorException() {
+        super();
+    }
+
+    public VisitorException(final String message) {
+        super(message);
+    }
+
+    public VisitorException(final Throwable cause) {
+        super(cause);
+    }
+
+    public VisitorException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -7,7 +7,6 @@ import dev.cephx.makeru.expr.StatementFormattingStrategies;
 import dev.cephx.makeru.expr.constraint.*;
 import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 import dev.cephx.makeru.expr.table.DropTableSQLExpression;
-import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -179,7 +178,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
 
     @Test
     public void tableConstraintUniqueNullsNotDistinct() {
-        val v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.DEFAULT);
+        final PostgreSQL81SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.DEFAULT);
 
         assertThrows(
                 UnsupportedOperationException.class,
@@ -189,7 +188,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
 
     @Test
     public void columnConstraintUniqueNullsNotDistinct() {
-        val v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.DEFAULT);
+        final PostgreSQL81SQLStatementVisitor v = new PostgreSQL81SQLStatementVisitor(StatementFormattingStrategies.DEFAULT);
 
         assertThrows(
                 UnsupportedOperationException.class,

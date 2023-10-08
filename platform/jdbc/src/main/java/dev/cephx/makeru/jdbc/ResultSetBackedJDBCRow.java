@@ -40,7 +40,7 @@ public class ResultSetBackedJDBCRow implements Row {
     }
 
     @Override
-    public <T> @Nullable T get(int index, Class<T> type) {
+    public <T> @Nullable T get(int index, @NotNull Class<T> type) {
         try {
             checkCursor();
 
@@ -53,7 +53,7 @@ public class ResultSetBackedJDBCRow implements Row {
     }
 
     @Override
-    public @Nullable Object get(String name) {
+    public @Nullable Object get(@NotNull String name) {
         try {
             checkCursor();
 
@@ -66,7 +66,7 @@ public class ResultSetBackedJDBCRow implements Row {
     }
 
     @Override
-    public <T> @Nullable T get(String name, Class<T> type) {
+    public <T> @Nullable T get(@NotNull String name, @NotNull Class<T> type) {
         try {
             checkCursor();
 

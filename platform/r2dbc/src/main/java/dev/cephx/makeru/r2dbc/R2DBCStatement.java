@@ -1,28 +1,34 @@
 package dev.cephx.makeru.r2dbc;
 
 import dev.cephx.makeru.reactor.ReactiveStatement;
-import lombok.Data;
+import io.r2dbc.spi.Statement;
+import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 
-@Data
+import java.util.Objects;
+
 public class R2DBCStatement implements ReactiveStatement<R2DBCResult> {
     private final io.r2dbc.spi.Statement statement;
 
+    public R2DBCStatement(@NotNull Statement statement) {
+        this.statement = Objects.requireNonNull(statement, "statement");
+    }
+
     @Override
-    public R2DBCStatement add() {
+    public @NotNull R2DBCStatement add() {
         statement.add();
         return this;
     }
 
     @Override
-    public R2DBCStatement bind(int index, Object value) {
+    public @NotNull R2DBCStatement bind(int index, @NotNull Object value) {
         statement.bind(index, value);
         return this;
     }
 
     @Override
-    public R2DBCStatement bindNull(int index, Class<?> type) {
+    public @NotNull R2DBCStatement bindNull(int index, @NotNull Class<?> type) {
         statement.bind(index, type);
         return this;
     }
@@ -30,5 +36,29 @@ public class R2DBCStatement implements ReactiveStatement<R2DBCResult> {
     @Override
     public Publisher<R2DBCResult> execute() {
         return Flux.from(statement.execute()).map(R2DBCResult::new);
+    }
+
+    public @NotNull Statement getStatement() {
+        return this.statement;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        R2DBCStatement that = (R2DBCStatement) o;
+        return Objects.equals(statement, that.statement);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(statement);
+    }
+
+    @Override
+    public String toString() {
+        return "R2DBCStatement{" +
+                "statement=" + statement +
+                '}';
     }
 }
