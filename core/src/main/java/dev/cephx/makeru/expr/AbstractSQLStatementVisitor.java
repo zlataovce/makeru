@@ -75,14 +75,37 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
     }
 
     @Override
-    public void visitColumn(@NotNull ColumnSQLExpression expr) {
+    public boolean visitColumn(@NotNull ColumnSQLExpression expr) {
         if (hasVisitedFirstColumn) {
             write(", ");
         }
+        hasVisitedFirstColumn = true;
+
+        if (expr instanceof ColumnDeclarationSQLExpression) {
+            visitColumnDeclaration((ColumnDeclarationSQLExpression) expr);
+            return true;
+        } else if (expr instanceof ColumnNameSQLExpression) {
+            visitColumnName((ColumnNameSQLExpression) expr);
+            return true;
+        } else if (expr instanceof ColumnValueSQLExpression) {
+            visitColumnValue((ColumnValueSQLExpression) expr);
+            return true;
+        }
+        return false;
+    }
+
+    public void visitColumnDeclaration(ColumnDeclarationSQLExpression expr) {
         write(expr.getName());
         write(" ");
         write(expr.getType());
-        hasVisitedFirstColumn = true;
+    }
+
+    public void visitColumnName(ColumnNameSQLExpression expr) {
+        write(expr.getName());
+    }
+
+    public void visitColumnValue(ColumnValueSQLExpression expr) {
+        write(expr.getExpression());
     }
 
     private void checkConstraintType(ConstraintSQLExpression expr, boolean expectSingleColumn) {

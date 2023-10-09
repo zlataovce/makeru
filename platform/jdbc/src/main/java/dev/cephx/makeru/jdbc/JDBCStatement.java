@@ -48,7 +48,7 @@ public class JDBCStatement implements Statement<JDBCResult> {
     }
 
     @Override
-    public JDBCResult execute() {
+    public @NotNull JDBCResult execute() {
         try {
             return new JDBCResult(preparedStatement.executeQuery());
         } catch (SQLException e) {

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public interface SQLStatementVisitor {
     boolean visit(@NotNull StatementBaseSQLExpression expr);
     void visitColumns();
-    void visitColumn(@NotNull ColumnSQLExpression expr);
+    boolean visitColumn(@NotNull ColumnSQLExpression expr);
     boolean visitColumnConstraint(@NotNull ColumnConstraintSQLExpression expr);
     boolean visitTableConstraint(@NotNull TableConstraintSQLExpression expr);
     void visitColumnsEnd();

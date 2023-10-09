@@ -115,16 +115,13 @@ public class ForeignKeyConstraintSQLExpression implements MultiColumnConstraintS
     }
 
     public @NotNull Builder toBuilder() {
-        final Builder builder = new Builder()
+        return new Builder()
                 .name(this.name)
+                .columnNames(this.columnNames)
                 .refTable(this.refTable)
+                .refColumns(this.refColumns)
                 .onUpdate(this.onUpdate)
                 .onDelete(this.onDelete);
-
-        if (this.columnNames != null) builder.columnNames(this.columnNames);
-        if (this.refColumns != null) builder.refColumns(this.refColumns);
-
-        return builder;
     }
 
     public static class ReferentialAction {
@@ -145,7 +142,7 @@ public class ForeignKeyConstraintSQLExpression implements MultiColumnConstraintS
         }
 
         @LimitedFeatureSupport(platform = "POSTGRESQL")
-        public @Unmodifiable List<String> getColumns() {
+        public @NotNull @Unmodifiable List<String> getColumns() {
             return this.columns;
         }
 
@@ -154,7 +151,8 @@ public class ForeignKeyConstraintSQLExpression implements MultiColumnConstraintS
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             ReferentialAction that = (ReferentialAction) o;
-            return type == that.type && Objects.equals(columns, that.columns);
+            return type == that.type
+                    && Objects.equals(columns, that.columns);
         }
 
         @Override
@@ -180,12 +178,9 @@ public class ForeignKeyConstraintSQLExpression implements MultiColumnConstraintS
         }
 
         public @NotNull Builder toBuilder() {
-            final Builder builder = new Builder()
-                    .type(this.type);
-
-            if (this.columns != null) builder.columns(this.columns);
-
-            return builder;
+            return new Builder()
+                    .type(this.type)
+                    .columns(this.columns);
         }
 
         public enum Type {
@@ -320,17 +315,19 @@ public class ForeignKeyConstraintSQLExpression implements MultiColumnConstraintS
             return this;
         }
 
+        @Contract("_ -> this")
         public @NotNull Builder onUpdate(@Nullable ReferentialAction onUpdate) {
             this.onUpdate = onUpdate;
             return this;
         }
 
+        @Contract("_ -> this")
         public @NotNull Builder onDelete(@Nullable ReferentialAction onDelete) {
             this.onDelete = onDelete;
             return this;
         }
 
-        public ForeignKeyConstraintSQLExpression build() {
+        public @NotNull ForeignKeyConstraintSQLExpression build() {
             return new ForeignKeyConstraintSQLExpression(this.name, this.columnNames, this.refTable, this.refColumns, this.onUpdate, this.onDelete);
         }
 

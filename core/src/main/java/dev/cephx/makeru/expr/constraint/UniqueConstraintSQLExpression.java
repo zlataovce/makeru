@@ -81,13 +81,10 @@ public class UniqueConstraintSQLExpression implements MultiColumnConstraintSQLEx
     }
 
     public @NotNull Builder toBuilder() {
-        final Builder builder = new Builder()
+        return new Builder()
                 .name(this.name)
-                .nullsDistinct(this.nullsDistinct);
-
-        if (this.columnNames != null) builder.columnNames(this.columnNames);
-
-        return builder;
+                .nullsDistinct(this.nullsDistinct)
+                .columnNames(this.columnNames);
     }
 
     public static class Builder {

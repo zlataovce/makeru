@@ -59,16 +59,13 @@ public class PrimaryKeyConstraintSQLExpression implements MultiColumnConstraintS
     }
 
     public @NotNull Builder toBuilder() {
-        final Builder builder = new Builder()
-                .name(this.name);
-
-        if (this.columnNames != null) builder.columnNames(this.columnNames);
-
-        return builder;
+        return new Builder()
+                .name(this.name)
+                .columnNames(this.columnNames);
     }
 
     public static class Builder {
-        private @Nullable String name;
+        private String name;
         private final List<String> columnNames = new ArrayList<>();
 
         Builder() {

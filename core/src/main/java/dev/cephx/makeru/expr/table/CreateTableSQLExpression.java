@@ -71,7 +71,7 @@ public class CreateTableSQLExpression implements StatementBaseSQLExpression {
     }
 
     public static class Builder {
-        private boolean ifNotExists;
+        private boolean ifNotExists = false;
         private String tableName;
 
         Builder() {

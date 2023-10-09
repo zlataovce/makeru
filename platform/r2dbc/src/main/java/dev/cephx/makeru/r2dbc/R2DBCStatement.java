@@ -34,7 +34,7 @@ public class R2DBCStatement implements ReactiveStatement<R2DBCResult> {
     }
 
     @Override
-    public Publisher<R2DBCResult> execute() {
+    public @NotNull Publisher<R2DBCResult> execute() {
         return Flux.from(statement.execute()).map(R2DBCResult::new);
     }
 

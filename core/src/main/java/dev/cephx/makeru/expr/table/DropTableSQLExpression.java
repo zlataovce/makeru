@@ -20,7 +20,7 @@ public class DropTableSQLExpression implements StatementBaseSQLExpression {
 
     public DropTableSQLExpression(boolean ifExists, @NotNull List<String> tableNames, @Nullable Action action) {
         this.ifExists = ifExists;
-        this.tableNames = Objects.requireNonNull(tableNames, "tableNames");
+        this.tableNames = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(tableNames, "tableNames")));
         this.action = action;
     }
 
@@ -79,13 +79,10 @@ public class DropTableSQLExpression implements StatementBaseSQLExpression {
     }
 
     public @NotNull Builder toBuilder() {
-        final Builder builder = new Builder()
+        return new Builder()
                 .ifExists(this.ifExists)
+                .tableNames(this.tableNames)
                 .action(this.action);
-
-        if (this.tableNames != null) builder.tableNames(this.tableNames);
-
-        return builder;
     }
 
     public enum Action {
@@ -120,7 +117,7 @@ public class DropTableSQLExpression implements StatementBaseSQLExpression {
 
         @Contract("_ -> this")
         public @NotNull Builder tableNames(@NotNull Collection<? extends String> tableNames) {
-            if (Objects.requireNonNull(tableNames, "tableName").contains(null)) {
+            if (Objects.requireNonNull(tableNames, "tableNames").contains(null)) {
                 throw new NullPointerException("tableName");
             }
 

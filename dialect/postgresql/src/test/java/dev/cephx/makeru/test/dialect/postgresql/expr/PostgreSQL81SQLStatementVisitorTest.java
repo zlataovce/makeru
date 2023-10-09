@@ -1,7 +1,7 @@
 package dev.cephx.makeru.test.dialect.postgresql.expr;
 
 import dev.cephx.makeru.dialect.postgresql.expr.PostgreSQL81SQLStatementVisitor;
-import dev.cephx.makeru.expr.ColumnSQLExpression;
+import dev.cephx.makeru.expr.ColumnDeclarationSQLExpression;
 import dev.cephx.makeru.expr.SQLStatementVisitor;
 import dev.cephx.makeru.expr.StatementFormattingStrategies;
 import dev.cephx.makeru.expr.constraint.*;
@@ -23,7 +23,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
         assertEquals("CREATE TABLE customers", v.toString());
         v.visitColumns();
         assertEquals("CREATE TABLE customers (", v.toString());
-        v.visitColumn(ColumnSQLExpression.builder().name("id").type("uuid").build());
+        v.visitColumn(ColumnDeclarationSQLExpression.builder().name("id").type("uuid").build());
         assertEquals("CREATE TABLE customers (id uuid", v.toString());
         v.visitColumnConstraint(NotNullConstraintSQLExpression.builder().build());
         assertEquals("CREATE TABLE customers (id uuid NOT NULL", v.toString());
@@ -33,7 +33,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
         assertEquals("CREATE TABLE customers (id uuid NOT NULL PRIMARY KEY DEFAULT gen_random_uuid()", v.toString());
         v.visitColumnConstraint(ForeignKeyConstraintSQLExpression.builder().refTable("orders").refColumn("customer_id").build());
         assertEquals("CREATE TABLE customers (id uuid NOT NULL PRIMARY KEY DEFAULT gen_random_uuid() REFERENCES orders (customer_id)", v.toString());
-        v.visitColumn(ColumnSQLExpression.builder().name("name").type("text").build());
+        v.visitColumn(ColumnDeclarationSQLExpression.builder().name("name").type("text").build());
         assertEquals("CREATE TABLE customers (id uuid NOT NULL PRIMARY KEY DEFAULT gen_random_uuid() REFERENCES orders (customer_id), name text", v.toString());
         v.visitColumnConstraint(NotNullConstraintSQLExpression.builder().build());
         assertEquals("CREATE TABLE customers (id uuid NOT NULL PRIMARY KEY DEFAULT gen_random_uuid() REFERENCES orders (customer_id), name text NOT NULL", v.toString());
@@ -66,7 +66,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
         assertEquals("create table customers", v.toString());
         v.visitColumns();
         assertEquals("create table customers (", v.toString());
-        v.visitColumn(ColumnSQLExpression.builder().name("id").type("uuid").build());
+        v.visitColumn(ColumnDeclarationSQLExpression.builder().name("id").type("uuid").build());
         assertEquals("create table customers (id uuid", v.toString());
         v.visitColumnConstraint(NotNullConstraintSQLExpression.builder().build());
         assertEquals("create table customers (id uuid not null", v.toString());
@@ -76,7 +76,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
         assertEquals("create table customers (id uuid not null primary key default gen_random_uuid()", v.toString());
         v.visitColumnConstraint(ForeignKeyConstraintSQLExpression.builder().refTable("orders").refColumn("customer_id").build());
         assertEquals("create table customers (id uuid not null primary key default gen_random_uuid() references orders (customer_id)", v.toString());
-        v.visitColumn(ColumnSQLExpression.builder().name("name").type("text").build());
+        v.visitColumn(ColumnDeclarationSQLExpression.builder().name("name").type("text").build());
         assertEquals("create table customers (id uuid not null primary key default gen_random_uuid() references orders (customer_id), name text", v.toString());
         v.visitColumnConstraint(NotNullConstraintSQLExpression.builder().build());
         assertEquals("create table customers (id uuid not null primary key default gen_random_uuid() references orders (customer_id), name text not null", v.toString());
@@ -110,7 +110,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
         assertEquals("create table customers", v.toString());
         v.visitColumns();
         assertEquals("create table customers (", v.toString());
-        v.visitColumn(ColumnSQLExpression.builder().name("id").type("uuid").build());
+        v.visitColumn(ColumnDeclarationSQLExpression.builder().name("id").type("uuid").build());
         assertEquals("create table customers (id uuid", v.toString());
         v.visitColumnConstraint(NotNullConstraintSQLExpression.builder().build());
         assertEquals("create table customers (id uuid not null", v.toString());
@@ -120,7 +120,7 @@ public class PostgreSQL81SQLStatementVisitorTest {
         assertEquals("create table customers (id uuid not null primary key default gen_random_uuid()", v.toString());
         v.visitColumnConstraint(ForeignKeyConstraintSQLExpression.builder().refTable("orders").refColumn("customer_id").build());
         assertEquals("create table customers (id uuid not null primary key default gen_random_uuid() references orders (customer_id)", v.toString());
-        v.visitColumn(ColumnSQLExpression.builder().name("name").type("text").build());
+        v.visitColumn(ColumnDeclarationSQLExpression.builder().name("name").type("text").build());
         assertEquals("create table customers (id uuid not null primary key default gen_random_uuid() references orders (customer_id), name text", v.toString());
         v.visitColumnConstraint(NotNullConstraintSQLExpression.builder().build());
         assertEquals("create table customers (id uuid not null primary key default gen_random_uuid() references orders (customer_id), name text not null", v.toString());
