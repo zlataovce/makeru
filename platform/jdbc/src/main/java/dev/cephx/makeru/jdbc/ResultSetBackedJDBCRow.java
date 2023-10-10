@@ -31,7 +31,7 @@ public class ResultSetBackedJDBCRow implements Row {
         try {
             checkCursor();
 
-            return resultSet.getObject(index);
+            return resultSet.getObject(index + 1 /* JDBC starts counting at 1, normalize */);
         } catch (SQLException e) {
             sneakyThrow(e);
         }
@@ -40,11 +40,32 @@ public class ResultSetBackedJDBCRow implements Row {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> @Nullable T get(int index, @NotNull Class<T> type) {
         try {
             checkCursor();
 
-            return resultSet.getObject(index, type);
+            final int jdbcIndex = index + 1; // JDBC starts counting at 1, normalize
+            if (type == boolean.class || type == Boolean.class) {
+                return (T) ((Boolean) resultSet.getBoolean(jdbcIndex));
+            } else if (type == byte.class || type == Byte.class) {
+                return (T) ((Byte) resultSet.getByte(jdbcIndex));
+            } else if (type == char.class || type == Character.class) {
+                return (T) ((Character) resultSet.getString(jdbcIndex).charAt(0));
+            } else if (type == double.class || type == Double.class) {
+                return (T) ((Double) resultSet.getDouble(jdbcIndex));
+            } else if (type == float.class || type == Float.class) {
+                return (T) ((Float) resultSet.getFloat(jdbcIndex));
+            } else if (type == int.class || type == Integer.class) {
+                return (T) ((Integer) resultSet.getInt(jdbcIndex));
+            } else if (type == long.class || type == Long.class) {
+                return (T) ((Long) resultSet.getLong(jdbcIndex));
+            } else if (type == short.class || type == Short.class) {
+                return (T) ((Short) resultSet.getShort(jdbcIndex));
+            }
+            // TODO: add complex types
+
+            return resultSet.getObject(jdbcIndex, type);
         } catch (SQLException e) {
             sneakyThrow(e);
         }
@@ -66,9 +87,29 @@ public class ResultSetBackedJDBCRow implements Row {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> @Nullable T get(@NotNull String name, @NotNull Class<T> type) {
         try {
             checkCursor();
+
+            if (type == boolean.class || type == Boolean.class) {
+                return (T) ((Boolean) resultSet.getBoolean(name));
+            } else if (type == byte.class || type == Byte.class) {
+                return (T) ((Byte) resultSet.getByte(name));
+            } else if (type == char.class || type == Character.class) {
+                return (T) ((Character) resultSet.getString(name).charAt(0));
+            } else if (type == double.class || type == Double.class) {
+                return (T) ((Double) resultSet.getDouble(name));
+            } else if (type == float.class || type == Float.class) {
+                return (T) ((Float) resultSet.getFloat(name));
+            } else if (type == int.class || type == Integer.class) {
+                return (T) ((Integer) resultSet.getInt(name));
+            } else if (type == long.class || type == Long.class) {
+                return (T) ((Long) resultSet.getLong(name));
+            } else if (type == short.class || type == Short.class) {
+                return (T) ((Short) resultSet.getShort(name));
+            }
+            // TODO: add complex types
 
             return resultSet.getObject(name, type);
         } catch (SQLException e) {

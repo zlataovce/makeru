@@ -7,5 +7,9 @@ import org.reactivestreams.Publisher;
 
 public interface ReactiveStatement<R extends ReactiveResult<? extends Row>> extends StatementLike<ReactiveStatement<R>> {
     @NotNull
-    Publisher<R> execute();
+    Publisher<Void> execute();
+    @NotNull
+    Publisher<R> executeAsQuery();
+    @NotNull
+    Publisher<Long> executeAsUpdate();
 }

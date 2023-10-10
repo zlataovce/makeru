@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Objects;
 
 import static dev.cephx.makeru.jdbc.util.ExceptionUtil.sneakyThrow;
@@ -48,14 +49,36 @@ public class JDBCStatement implements Statement<JDBCResult> {
     }
 
     @Override
-    public @NotNull JDBCResult execute() {
+    public void execute() {
         try {
-            return new JDBCResult(preparedStatement.executeQuery());
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            sneakyThrow(e);
+        }
+    }
+
+    @Override
+    public @NotNull Iterable<JDBCResult> executeAsQuery() {
+        try {
+            return Collections.singletonList(
+                    new JDBCResult(preparedStatement.executeQuery())
+            );
         } catch (SQLException e) {
             sneakyThrow(e);
         }
 
         return null; // unreachable
+    }
+
+    @Override
+    public long executeAsUpdate() {
+        try {
+            return preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            sneakyThrow(e);
+        }
+
+        return -1; // unreachable
     }
 
     public @NotNull PreparedStatement getPreparedStatement() {

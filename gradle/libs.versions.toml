@@ -8,4 +8,5 @@ r2dbc-spi = { group = "io.r2dbc", name = "r2dbc-spi", version = "1.0.0.RELEASE" 
 reactive-streams = { group = "org.reactivestreams", name = "reactive-streams", version = "1.0.4" }
 reactor-core = { group = "io.projectreactor", name = "reactor-core", version = "3.5.10" }
 jb-annotations = { group = "org.jetbrains", name = "annotations", version = "24.0.1" }
+h2 = { group = "com.h2database", name = "h2", version = "2.2.224" }
 build-gradle-versions = { group = "com.github.ben-manes", name = "gradle-versions-plugin", version = "0.46.0" }

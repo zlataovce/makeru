@@ -3,6 +3,7 @@ package dev.cephx.makeru.jdbc;
 import dev.cephx.makeru.Connection;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 
@@ -27,7 +28,7 @@ public class JDBCConnection implements Connection {
     @Override
     public @NotNull JDBCStatement createStatement(@NotNull String sql) {
         try {
-            return new JDBCStatement(connection.prepareStatement(sql));
+            return new JDBCStatement(connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE));
         } catch (SQLException e) {
             sneakyThrow(e);
         }

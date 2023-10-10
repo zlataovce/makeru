@@ -1,12 +1,14 @@
 package dev.cephx.makeru.r2dbc;
 
 import dev.cephx.makeru.reactor.ReactiveStatement;
+import io.r2dbc.spi.Result;
 import io.r2dbc.spi.Statement;
 import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class R2DBCStatement implements ReactiveStatement<R2DBCResult> {
     private final io.r2dbc.spi.Statement statement;
@@ -29,13 +31,25 @@ public class R2DBCStatement implements ReactiveStatement<R2DBCResult> {
 
     @Override
     public @NotNull R2DBCStatement bindNull(int index, @NotNull Class<?> type) {
-        statement.bind(index, type);
+        statement.bindNull(index, type);
         return this;
     }
 
     @Override
-    public @NotNull Publisher<R2DBCResult> execute() {
+    public @NotNull Publisher<Void> execute() {
+        return Flux.from(statement.execute()).then();
+    }
+
+    @Override
+    public @NotNull Publisher<R2DBCResult> executeAsQuery() {
         return Flux.from(statement.execute()).map(R2DBCResult::new);
+    }
+
+    @Override
+    public @NotNull Publisher<Long> executeAsUpdate() {
+        return Flux.from(statement.execute())
+                .flatMap(Result::getRowsUpdated)
+                .collect(Collectors.summingLong(l -> l));
     }
 
     public @NotNull Statement getStatement() {
