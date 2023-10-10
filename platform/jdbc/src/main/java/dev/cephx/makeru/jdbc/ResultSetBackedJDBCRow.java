@@ -4,6 +4,8 @@ import dev.cephx.makeru.Row;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
@@ -28,10 +30,12 @@ public class ResultSetBackedJDBCRow implements Row {
 
     @Override
     public @Nullable Object get(int index) {
+        index++; // JDBC starts counting at 1, normalize
+
         try {
             checkCursor();
 
-            return resultSet.getObject(index + 1 /* JDBC starts counting at 1, normalize */);
+            return wrapObject(resultSet.getObject(index));
         } catch (SQLException e) {
             sneakyThrow(e);
         }
@@ -40,32 +44,11 @@ public class ResultSetBackedJDBCRow implements Row {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> @Nullable T get(int index, @NotNull Class<T> type) {
         try {
             checkCursor();
 
-            final int jdbcIndex = index + 1; // JDBC starts counting at 1, normalize
-            if (type == boolean.class || type == Boolean.class) {
-                return (T) ((Boolean) resultSet.getBoolean(jdbcIndex));
-            } else if (type == byte.class || type == Byte.class) {
-                return (T) ((Byte) resultSet.getByte(jdbcIndex));
-            } else if (type == char.class || type == Character.class) {
-                return (T) ((Character) resultSet.getString(jdbcIndex).charAt(0));
-            } else if (type == double.class || type == Double.class) {
-                return (T) ((Double) resultSet.getDouble(jdbcIndex));
-            } else if (type == float.class || type == Float.class) {
-                return (T) ((Float) resultSet.getFloat(jdbcIndex));
-            } else if (type == int.class || type == Integer.class) {
-                return (T) ((Integer) resultSet.getInt(jdbcIndex));
-            } else if (type == long.class || type == Long.class) {
-                return (T) ((Long) resultSet.getLong(jdbcIndex));
-            } else if (type == short.class || type == Short.class) {
-                return (T) ((Short) resultSet.getShort(jdbcIndex));
-            }
-            // TODO: add complex types
-
-            return resultSet.getObject(jdbcIndex, type);
+            return getByType(index, type);
         } catch (SQLException e) {
             sneakyThrow(e);
         }
@@ -78,7 +61,7 @@ public class ResultSetBackedJDBCRow implements Row {
         try {
             checkCursor();
 
-            return resultSet.getObject(name);
+            return wrapObject(resultSet.getObject(name));
         } catch (SQLException e) {
             sneakyThrow(e);
         }
@@ -87,31 +70,11 @@ public class ResultSetBackedJDBCRow implements Row {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> @Nullable T get(@NotNull String name, @NotNull Class<T> type) {
         try {
             checkCursor();
 
-            if (type == boolean.class || type == Boolean.class) {
-                return (T) ((Boolean) resultSet.getBoolean(name));
-            } else if (type == byte.class || type == Byte.class) {
-                return (T) ((Byte) resultSet.getByte(name));
-            } else if (type == char.class || type == Character.class) {
-                return (T) ((Character) resultSet.getString(name).charAt(0));
-            } else if (type == double.class || type == Double.class) {
-                return (T) ((Double) resultSet.getDouble(name));
-            } else if (type == float.class || type == Float.class) {
-                return (T) ((Float) resultSet.getFloat(name));
-            } else if (type == int.class || type == Integer.class) {
-                return (T) ((Integer) resultSet.getInt(name));
-            } else if (type == long.class || type == Long.class) {
-                return (T) ((Long) resultSet.getLong(name));
-            } else if (type == short.class || type == Short.class) {
-                return (T) ((Short) resultSet.getShort(name));
-            }
-            // TODO: add complex types
-
-            return resultSet.getObject(name, type);
+            return getByType(name, type);
         } catch (SQLException e) {
             sneakyThrow(e);
         }
@@ -119,7 +82,77 @@ public class ResultSetBackedJDBCRow implements Row {
         return null; // unreachable
     }
 
-    private void checkCursor() throws SQLException {
+    @SuppressWarnings("unchecked")
+    protected <T> T getByType(int index, Class<T> type) throws SQLException {
+        index++; // JDBC starts counting at 1, normalize
+
+        if (type == boolean.class || type == Boolean.class) {
+            return (T) ((Boolean) resultSet.getBoolean(index));
+        } else if (type == byte.class || type == Byte.class) {
+            return (T) ((Byte) resultSet.getByte(index));
+        } else if (type == char.class || type == Character.class) {
+            return (T) ((Character) resultSet.getString(index).charAt(0));
+        } else if (type == double.class || type == Double.class) {
+            return (T) ((Double) resultSet.getDouble(index));
+        } else if (type == float.class || type == Float.class) {
+            return (T) ((Float) resultSet.getFloat(index));
+        } else if (type == int.class || type == Integer.class) {
+            return (T) ((Integer) resultSet.getInt(index));
+        } else if (type == long.class || type == Long.class) {
+            return (T) ((Long) resultSet.getLong(index));
+        } else if (type == short.class || type == Short.class) {
+            return (T) ((Short) resultSet.getShort(index));
+        } else if (type == byte[].class || type == Byte[].class) {
+            return (T) resultSet.getBytes(index);
+        } else if (type == BigDecimal.class) {
+            return (T) resultSet.getBigDecimal(index);
+        } else if (type == InputStream.class) {
+            return (T) resultSet.getBinaryStream(index);
+        }
+        // TODO: add more complex types
+
+        return resultSet.getObject(index, type);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> T getByType(String name, Class<T> type) throws SQLException {
+        if (type == boolean.class || type == Boolean.class) {
+            return (T) ((Boolean) resultSet.getBoolean(name));
+        } else if (type == byte.class || type == Byte.class) {
+            return (T) ((Byte) resultSet.getByte(name));
+        } else if (type == char.class || type == Character.class) {
+            return (T) ((Character) resultSet.getString(name).charAt(0));
+        } else if (type == double.class || type == Double.class) {
+            return (T) ((Double) resultSet.getDouble(name));
+        } else if (type == float.class || type == Float.class) {
+            return (T) ((Float) resultSet.getFloat(name));
+        } else if (type == int.class || type == Integer.class) {
+            return (T) ((Integer) resultSet.getInt(name));
+        } else if (type == long.class || type == Long.class) {
+            return (T) ((Long) resultSet.getLong(name));
+        } else if (type == short.class || type == Short.class) {
+            return (T) ((Short) resultSet.getShort(name));
+        } else if (type == byte[].class || type == Byte[].class) {
+            return (T) resultSet.getBytes(name);
+        } else if (type == BigDecimal.class) {
+            return (T) resultSet.getBigDecimal(name);
+        } else if (type == InputStream.class) {
+            return (T) resultSet.getBinaryStream(name);
+        }
+        // TODO: add more complex types
+
+        return resultSet.getObject(name, type);
+    }
+
+    protected @Nullable Object wrapObject(@Nullable Object obj) {
+        if (obj == null) return null;
+
+        // TODO: wrap vendor-specific and JDBC types
+
+        return obj;
+    }
+
+    protected void checkCursor() throws SQLException {
         final int currentRow = resultSet.getRow();
         if (currentRow != id) {
             throw new IllegalStateException("Cursor is not at this row (expected id " + id + ", got " + currentRow + ")");

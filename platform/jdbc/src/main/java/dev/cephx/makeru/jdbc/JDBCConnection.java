@@ -28,7 +28,13 @@ public class JDBCConnection implements Connection {
     @Override
     public @NotNull JDBCStatement createStatement(@NotNull String sql) {
         try {
-            return new JDBCStatement(connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE));
+            return new JDBCStatement(
+                    connection.prepareStatement(
+                            sql,
+                            ResultSet.TYPE_SCROLL_INSENSITIVE, // scroll-capable and immutable results
+                            ResultSet.CONCUR_READ_ONLY // JDBCStatement doesn't have editing capabilities
+                    )
+            );
         } catch (SQLException e) {
             sneakyThrow(e);
         }
