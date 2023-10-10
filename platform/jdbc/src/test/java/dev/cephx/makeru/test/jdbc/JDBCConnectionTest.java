@@ -15,8 +15,11 @@ public class JDBCConnectionTest {
     @Test
     public void createTable() throws IOException {
         try (final Connection conn = new JDBCConnectionFactory(makeDataSource()).create()) {
-            conn.createStatement("CREATE TABLE test (id INT NOT NULL);").execute();
-            conn.createStatement("INSERT INTO test (id) VALUES (0);").execute();
+            conn.createStatement("CREATE TABLE test (id INT NOT NULL, test VARCHAR(30));").execute();
+            conn.createStatement("INSERT INTO test (id, test) VALUES (?, ?);")
+                    .bind(0, 0) // id
+                    .bind(1, "JDBC test") // test
+                    .execute();
 
             final Iterable<? extends Result<? extends Row>> results = conn.createStatement("SELECT * FROM test;").executeAsQuery();
 
@@ -33,6 +36,7 @@ public class JDBCConnectionTest {
 
                     readOneRow = true;
                     assertEquals(0, row.get(0, int.class)); // id
+                    assertEquals("JDBC test", row.get(1, String.class)); // test
                 }
 
                 assertTrue(readOneRow, "read no rows");

@@ -12,7 +12,7 @@ import java.util.Objects;
 
 import static dev.cephx.makeru.jdbc.util.ExceptionUtil.sneakyThrow;
 
-public class JDBCResult implements Result<ResultSetBackedJDBCRow> {
+public class JDBCResult implements Result<JDBCResultSetBackedRow> {
     private final ResultSet resultSet;
     private volatile boolean iterating = false;
 
@@ -21,7 +21,7 @@ public class JDBCResult implements Result<ResultSetBackedJDBCRow> {
     }
 
     @Override
-    public synchronized @NotNull Iterator<ResultSetBackedJDBCRow> iterator() {
+    public synchronized @NotNull Iterator<JDBCResultSetBackedRow> iterator() {
         try {
             if (resultSet.isClosed()) {
                 throw new IllegalStateException("Result set closed");

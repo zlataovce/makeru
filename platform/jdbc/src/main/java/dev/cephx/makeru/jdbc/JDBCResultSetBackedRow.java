@@ -5,18 +5,23 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 import static dev.cephx.makeru.jdbc.util.ExceptionUtil.sneakyThrow;
 
-public class ResultSetBackedJDBCRow implements Row {
+public class JDBCResultSetBackedRow implements Row {
     private final ResultSet resultSet;
     private final int id;
 
-    public ResultSetBackedJDBCRow(@NotNull ResultSet resultSet) {
+    public JDBCResultSetBackedRow(@NotNull ResultSet resultSet) {
         int id = -1; // always set
         try {
             id = resultSet.getRow();
@@ -48,7 +53,7 @@ public class ResultSetBackedJDBCRow implements Row {
         try {
             checkCursor();
 
-            return getByType(index, type);
+            return get0(index, type);
         } catch (SQLException e) {
             sneakyThrow(e);
         }
@@ -74,7 +79,7 @@ public class ResultSetBackedJDBCRow implements Row {
         try {
             checkCursor();
 
-            return getByType(name, type);
+            return get0(name, type);
         } catch (SQLException e) {
             sneakyThrow(e);
         }
@@ -83,7 +88,7 @@ public class ResultSetBackedJDBCRow implements Row {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T getByType(int index, Class<T> type) throws SQLException {
+    protected <T> T get0(int index, Class<T> type) throws SQLException {
         index++; // JDBC starts counting at 1, normalize
 
         if (type == boolean.class || type == Boolean.class) {
@@ -108,14 +113,27 @@ public class ResultSetBackedJDBCRow implements Row {
             return (T) resultSet.getBigDecimal(index);
         } else if (type == InputStream.class) {
             return (T) resultSet.getBinaryStream(index);
+        } else if (type == Reader.class) {
+            return (T) resultSet.getCharacterStream(index);
+        } else if (type == String.class) {
+            return (T) resultSet.getString(index);
+        } else if (type != Object.class) {
+            if (type.isAssignableFrom(LocalDate.class)) {
+                return (T) resultSet.getDate(index).toLocalDate();
+            } else if (type.isAssignableFrom(LocalTime.class)) {
+                return (T) resultSet.getTime(index).toLocalTime();
+            } else if (type.isAssignableFrom(LocalDateTime.class)) {
+                return (T) resultSet.getTimestamp(index).toLocalDateTime();
+            } else if (type.isAssignableFrom(Instant.class)) {
+                return (T) resultSet.getTimestamp(index).toInstant();
+            }
         }
-        // TODO: add more complex types
 
         return resultSet.getObject(index, type);
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T getByType(String name, Class<T> type) throws SQLException {
+    protected <T> T get0(String name, Class<T> type) throws SQLException {
         if (type == boolean.class || type == Boolean.class) {
             return (T) ((Boolean) resultSet.getBoolean(name));
         } else if (type == byte.class || type == Byte.class) {
@@ -138,17 +156,27 @@ public class ResultSetBackedJDBCRow implements Row {
             return (T) resultSet.getBigDecimal(name);
         } else if (type == InputStream.class) {
             return (T) resultSet.getBinaryStream(name);
+        } else if (type == Reader.class) {
+            return (T) resultSet.getCharacterStream(name);
+        } else if (type == String.class) {
+            return (T) resultSet.getString(name);
+        } else if (type != Object.class) {
+            if (type.isAssignableFrom(LocalDate.class)) {
+                return (T) resultSet.getDate(name).toLocalDate();
+            } else if (type.isAssignableFrom(LocalTime.class)) {
+                return (T) resultSet.getTime(name).toLocalTime();
+            } else if (type.isAssignableFrom(LocalDateTime.class)) {
+                return (T) resultSet.getTimestamp(name).toLocalDateTime();
+            } else if (type.isAssignableFrom(Instant.class)) {
+                return (T) resultSet.getTimestamp(name).toInstant();
+            }
         }
-        // TODO: add more complex types
 
         return resultSet.getObject(name, type);
     }
 
+    // wrap vendor-specific types here
     protected @Nullable Object wrapObject(@Nullable Object obj) {
-        if (obj == null) return null;
-
-        // TODO: wrap vendor-specific and JDBC types
-
         return obj;
     }
 
@@ -171,7 +199,7 @@ public class ResultSetBackedJDBCRow implements Row {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ResultSetBackedJDBCRow that = (ResultSetBackedJDBCRow) o;
+        JDBCResultSetBackedRow that = (JDBCResultSetBackedRow) o;
         return id == that.id && Objects.equals(resultSet, that.resultSet);
     }
 
