@@ -16,7 +16,7 @@ import java.util.Objects;
 
 import static dev.cephx.makeru.jdbc.util.ExceptionUtil.sneakyThrow;
 
-public class JDBCStatement implements Statement<JDBCResult> {
+public class JDBCStatement implements Statement {
     private final PreparedStatement preparedStatement;
 
     public JDBCStatement(@NotNull PreparedStatement preparedStatement) {

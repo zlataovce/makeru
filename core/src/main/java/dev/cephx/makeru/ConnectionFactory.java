@@ -2,7 +2,7 @@ package dev.cephx.makeru;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface ConnectionFactory<C extends Connection> {
+public interface ConnectionFactory {
     @NotNull
-    C create();
+    Connection create();
 }

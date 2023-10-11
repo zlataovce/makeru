@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class R2DBCRow implements Row {
-    private final io.r2dbc.spi.Readable row;
+    private final Readable row;
 
     public R2DBCRow(@NotNull Readable row) {
         this.row = row;

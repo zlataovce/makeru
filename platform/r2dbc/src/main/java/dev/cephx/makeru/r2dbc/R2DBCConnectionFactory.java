@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
-public class R2DBCConnectionFactory implements ReactiveConnectionFactory<R2DBCConnection> {
+public class R2DBCConnectionFactory implements ReactiveConnectionFactory {
     private final ConnectionFactory connectionFactory;
 
     public R2DBCConnectionFactory(@NotNull ConnectionFactory connectionFactory) {

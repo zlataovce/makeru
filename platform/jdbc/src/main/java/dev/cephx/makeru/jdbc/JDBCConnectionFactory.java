@@ -9,7 +9,7 @@ import java.util.Objects;
 
 import static dev.cephx.makeru.jdbc.util.ExceptionUtil.sneakyThrow;
 
-public class JDBCConnectionFactory implements ConnectionFactory<JDBCConnection> {
+public class JDBCConnectionFactory implements ConnectionFactory {
     private final DataSource dataSource;
 
     public JDBCConnectionFactory(@NotNull DataSource dataSource) {

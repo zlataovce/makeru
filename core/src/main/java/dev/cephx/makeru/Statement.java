@@ -2,9 +2,9 @@ package dev.cephx.makeru;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface Statement<R extends Result<? extends Row>> extends StatementLike<Statement<R>> {
+public interface Statement extends StatementLike<Statement> {
     void execute();
     @NotNull
-    Iterable<R> executeAsQuery();
+    Iterable<? extends Result<? extends Row>> executeAsQuery();
     long executeAsUpdate();
 }

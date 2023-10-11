@@ -10,7 +10,7 @@ import reactor.core.publisher.Flux;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class R2DBCStatement implements ReactiveStatement<R2DBCResult> {
+public class R2DBCStatement implements ReactiveStatement {
     private final io.r2dbc.spi.Statement statement;
 
     public R2DBCStatement(@NotNull Statement statement) {

@@ -5,11 +5,11 @@ import dev.cephx.makeru.StatementLike;
 import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
 
-public interface ReactiveStatement<R extends ReactiveResult<? extends Row>> extends StatementLike<ReactiveStatement<R>> {
+public interface ReactiveStatement extends StatementLike<ReactiveStatement> {
     @NotNull
     Publisher<Void> execute();
     @NotNull
-    Publisher<R> executeAsQuery();
+    Publisher<? extends ReactiveResult<? extends Row>> executeAsQuery();
     @NotNull
     Publisher<Long> executeAsUpdate();
 }

@@ -3,7 +3,7 @@ package dev.cephx.makeru.reactor;
 import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
 
-public interface ReactiveConnectionFactory<C extends ReactiveConnection> {
+public interface ReactiveConnectionFactory {
     @NotNull
-    Publisher<C> create();
+    Publisher<? extends ReactiveConnection> create();
 }
