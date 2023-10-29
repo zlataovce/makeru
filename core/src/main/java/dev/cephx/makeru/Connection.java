@@ -6,5 +6,5 @@ import java.io.Closeable;
 
 public interface Connection extends Closeable {
     @NotNull
-    Statement<? extends Result<? extends Row>> createStatement(@NotNull String sql);
+    Statement createStatement(@NotNull String sql);
 }
