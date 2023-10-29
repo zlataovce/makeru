@@ -7,8 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -117,16 +116,20 @@ public class JDBCResultSetBackedRow implements Row {
             return (T) resultSet.getCharacterStream(index);
         } else if (type == String.class) {
             return (T) resultSet.getString(index);
-        } else if (type != Object.class) {
-            if (type.isAssignableFrom(LocalDate.class)) {
-                return (T) resultSet.getDate(index).toLocalDate();
-            } else if (type.isAssignableFrom(LocalTime.class)) {
-                return (T) resultSet.getTime(index).toLocalTime();
-            } else if (type.isAssignableFrom(LocalDateTime.class)) {
-                return (T) resultSet.getTimestamp(index).toLocalDateTime();
-            } else if (type.isAssignableFrom(Instant.class)) {
-                return (T) resultSet.getTimestamp(index).toInstant();
-            }
+        } else if (type == Date.class) {
+            return (T) resultSet.getDate(index);
+        } else if (type == Time.class) {
+            return (T) resultSet.getTime(index);
+        } else if (type == Timestamp.class) {
+            return (T) resultSet.getTimestamp(index);
+        } else if (type == LocalDate.class) { // begin complex conversions
+            return (T) resultSet.getDate(index).toLocalDate();
+        } else if (type == LocalTime.class) {
+            return (T) resultSet.getTime(index).toLocalTime();
+        } else if (type == LocalDateTime.class) {
+            return (T) resultSet.getTimestamp(index).toLocalDateTime();
+        } else if (type == Instant.class) {
+            return (T) resultSet.getTimestamp(index).toInstant();
         }
 
         return resultSet.getObject(index, type);
@@ -160,16 +163,20 @@ public class JDBCResultSetBackedRow implements Row {
             return (T) resultSet.getCharacterStream(name);
         } else if (type == String.class) {
             return (T) resultSet.getString(name);
-        } else if (type != Object.class) {
-            if (type.isAssignableFrom(LocalDate.class)) {
-                return (T) resultSet.getDate(name).toLocalDate();
-            } else if (type.isAssignableFrom(LocalTime.class)) {
-                return (T) resultSet.getTime(name).toLocalTime();
-            } else if (type.isAssignableFrom(LocalDateTime.class)) {
-                return (T) resultSet.getTimestamp(name).toLocalDateTime();
-            } else if (type.isAssignableFrom(Instant.class)) {
-                return (T) resultSet.getTimestamp(name).toInstant();
-            }
+        } else if (type == Date.class) {
+            return (T) resultSet.getDate(name);
+        } else if (type == Time.class) {
+            return (T) resultSet.getTime(name);
+        } else if (type == Timestamp.class) {
+            return (T) resultSet.getTimestamp(name);
+        } else if (type == LocalDate.class) { // begin complex conversions
+            return (T) resultSet.getDate(name).toLocalDate();
+        } else if (type == LocalTime.class) {
+            return (T) resultSet.getTime(name).toLocalTime();
+        } else if (type == LocalDateTime.class) {
+            return (T) resultSet.getTimestamp(name).toLocalDateTime();
+        } else if (type == Instant.class) {
+            return (T) resultSet.getTimestamp(name).toInstant();
         }
 
         return resultSet.getObject(name, type);

@@ -93,6 +93,7 @@ public class JDBCStatement implements Statement {
     protected void bind0(int index, @NotNull Object value) throws SQLException {
         index++; // JDBC starts counting at 1, normalize
 
+        value = convertComplex(value);
         if (value instanceof Boolean) {
             preparedStatement.setBoolean(index, (boolean) value);
         } else if (value instanceof Byte) {
@@ -119,21 +120,34 @@ public class JDBCStatement implements Statement {
             preparedStatement.setCharacterStream(index, (Reader) value);
         } else if (value instanceof String) {
             preparedStatement.setString(index, (String) value);
-        } else if (value instanceof LocalDate) {
-            preparedStatement.setDate(index, Date.valueOf((LocalDate) value));
-        } else if (value instanceof LocalTime) {
-            preparedStatement.setTime(index, Time.valueOf((LocalTime) value));
-        } else if (value instanceof LocalDateTime) {
-            preparedStatement.setTimestamp(index, Timestamp.valueOf((LocalDateTime) value));
-        } else if (value instanceof Instant) {
-            preparedStatement.setTimestamp(index, Timestamp.from((Instant) value));
+        } else if (value instanceof Date) {
+            preparedStatement.setDate(index, (Date) value);
+        } else if (value instanceof Time) {
+            preparedStatement.setTime(index, (Time) value);
+        } else if (value instanceof Timestamp) {
+            preparedStatement.setTimestamp(index, (Timestamp) value);
         } else {
             preparedStatement.setObject(index, value);
         }
     }
 
+    protected Object convertComplex(Object value) {
+        if (value instanceof LocalDate) {
+            return Date.valueOf((LocalDate) value);
+        } else if (value instanceof LocalTime) {
+            return Time.valueOf((LocalTime) value);
+        } else if (value instanceof LocalDateTime) {
+            return Timestamp.valueOf((LocalDateTime) value);
+        } else if (value instanceof Instant) {
+            return Timestamp.from((Instant) value);
+        }
+
+        return value;
+    }
+
     protected void bindNull0(int index, Class<?> type) throws SQLException {
         index++; // JDBC starts counting at 1, normalize
+        type = convertComplexType(type);
 
         int sqlType;
         if (type == boolean.class || type == Boolean.class) {
@@ -162,23 +176,30 @@ public class JDBCStatement implements Statement {
             sqlType = Types.LONGVARCHAR;
         } else if (type == String.class) {
             sqlType = Types.VARCHAR;
-        } else if (type != Object.class) {
-            if (type.isAssignableFrom(LocalDate.class)) {
-                sqlType = Types.DATE;
-            } else if (type.isAssignableFrom(LocalTime.class)) {
-                sqlType = Types.TIME;
-            } else if (type.isAssignableFrom(LocalDateTime.class) || type.isAssignableFrom(Instant.class)) {
-                sqlType = Types.TIMESTAMP;
-            } else { // default to untyped null
-                preparedStatement.setObject(index, null);
-                return;
-            }
+        } else if (type == Date.class) {
+            sqlType = Types.DATE;
+        } else if (type == Time.class) {
+            sqlType = Types.TIME;
+        } else if (type == Timestamp.class) {
+            sqlType = Types.TIMESTAMP;
         } else { // default to untyped null
             preparedStatement.setObject(index, null);
             return;
         }
 
         preparedStatement.setNull(index, sqlType);
+    }
+
+    protected Class<?> convertComplexType(Class<?> type) {
+        if (type == LocalDate.class) {
+            return Date.class;
+        } else if (type == LocalTime.class) {
+            return Time.class;
+        } else if (type == LocalDateTime.class || type == Instant.class) {
+            return Timestamp.class;
+        }
+
+        return type;
     }
 
     @Override
