@@ -11,6 +11,6 @@ fun includeComposite(name: String, vararg modules: String) {
 
 rootProject.name = "makeru"
 
-include("core", "reactor")
+include("core", "reactor", "mapping")
 includeComposite("platform", "jdbc", "r2dbc")
 includeComposite("dialect", "postgresql")

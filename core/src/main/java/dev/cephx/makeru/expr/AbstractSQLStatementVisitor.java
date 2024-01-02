@@ -5,21 +5,23 @@ import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 import dev.cephx.makeru.expr.table.DropTableSQLExpression;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor {
     protected final StringBuilder _builder = new StringBuilder();
     protected final StatementFormattingStrategy strategy;
 
     protected boolean hasVisitedFirstColumn = false;
 
-    public AbstractSQLStatementVisitor(StatementFormattingStrategy strategy) {
-        this.strategy = strategy;
+    public AbstractSQLStatementVisitor(@NotNull StatementFormattingStrategy strategy) {
+        this.strategy = Objects.requireNonNull(strategy, "strategy");
     }
 
-    protected void write(String s) {
+    protected void write(@NotNull String s) {
         _builder.append(s);
     }
 
-    protected void writeKeyword(String s) {
+    protected void writeKeyword(@NotNull String s) {
         final String formatted = strategy.formatKeyword(s);
         if (formatted != null) {
             _builder.append(formatted);
@@ -28,7 +30,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         }
     }
 
-    protected void writeKeywordDatabaseDependent(String s) {
+    protected void writeKeywordDatabaseDependent(@NotNull String s) {
         _builder.append(s);
     }
 
@@ -44,7 +46,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         return false;
     }
 
-    public void visitCreateTable(CreateTableSQLExpression expr) {
+    public void visitCreateTable(@NotNull CreateTableSQLExpression expr) {
         writeKeyword("create table ");
         if (!strategy.skipUnsupported() && expr.isIfNotExists()) {
             throw new UnsupportedOperationException("IF NOT EXISTS in CREATE TABLE is not supported");
@@ -52,7 +54,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         write(expr.getTableName());
     }
 
-    public void visitDropTable(DropTableSQLExpression expr) {
+    public void visitDropTable(@NotNull DropTableSQLExpression expr) {
         writeKeyword("drop table ");
         if (!strategy.skipUnsupported() && expr.isIfExists()) {
             throw new UnsupportedOperationException("IF EXISTS in DROP TABLE is not supported");
@@ -94,21 +96,21 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         return false;
     }
 
-    public void visitColumnDeclaration(ColumnDeclarationSQLExpression expr) {
+    public void visitColumnDeclaration(@NotNull ColumnDeclarationSQLExpression expr) {
         write(expr.getName());
         write(" ");
         write(expr.getType());
     }
 
-    public void visitColumnName(ColumnNameSQLExpression expr) {
+    public void visitColumnName(@NotNull ColumnNameSQLExpression expr) {
         write(expr.getName());
     }
 
-    public void visitColumnValue(ColumnValueSQLExpression expr) {
+    public void visitColumnValue(@NotNull ColumnValueSQLExpression expr) {
         write(expr.getExpression());
     }
 
-    private void checkConstraintType(ConstraintSQLExpression expr, boolean expectSingleColumn) {
+    private void checkConstraintType(@NotNull ConstraintSQLExpression expr, boolean expectSingleColumn) {
         if (expr instanceof MultiColumnConstraintSQLExpression) {
             final MultiColumnConstraintSQLExpression nExpr = (MultiColumnConstraintSQLExpression) expr;
             if (expectSingleColumn && nExpr.getColumnNames().size() > 1) {
@@ -132,7 +134,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         return false;
     }
 
-    public void visitDefaultColumnConstraint(DefaultConstraintSQLExpression expr) {
+    public void visitDefaultColumnConstraint(@NotNull DefaultConstraintSQLExpression expr) {
         writeKeyword(" default ");
         write(expr.getExpression());
     }
@@ -168,7 +170,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         return false;
     }
 
-    protected void visitTableConstraintPrefix(TableConstraintSQLExpression expr) {
+    protected void visitTableConstraintPrefix(@NotNull TableConstraintSQLExpression expr) {
         if (hasVisitedFirstColumn) {
             write(", ");
         }
@@ -179,17 +181,17 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         }
     }
 
-    protected void visitTableConstraintSuffix(TableConstraintSQLExpression expr) {
+    protected void visitTableConstraintSuffix(@NotNull TableConstraintSQLExpression expr) {
         hasVisitedFirstColumn = true;
     }
 
-    public void visitCheckTableConstraint(CheckConstraintSQLExpression expr) {
+    public void visitCheckTableConstraint(@NotNull CheckConstraintSQLExpression expr) {
         writeKeyword("check (");
         write(expr.getExpression());
         write(")");
     }
 
-    public void visitForeignKeyTableConstraint(ForeignKeyConstraintSQLExpression expr) {
+    public void visitForeignKeyTableConstraint(@NotNull ForeignKeyConstraintSQLExpression expr) {
         writeKeyword("foreign key (");
         if (expr.getColumnNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one column must be specified in FOREIGN KEY");
@@ -224,7 +226,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         }
     }
 
-    public void visitPrimaryKeyTableConstraint(PrimaryKeyConstraintSQLExpression expr) {
+    public void visitPrimaryKeyTableConstraint(@NotNull PrimaryKeyConstraintSQLExpression expr) {
         writeKeyword("primary key (");
         if (expr.getColumnNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one column must be specified in PRIMARY KEY");
@@ -233,7 +235,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         write(")");
     }
 
-    public void visitUniqueTableConstraint(UniqueConstraintSQLExpression expr) {
+    public void visitUniqueTableConstraint(@NotNull UniqueConstraintSQLExpression expr) {
         writeKeyword("unique ");
         if (!strategy.skipUnsupported() && !expr.isNullsDistinct()) {
             throw new UnsupportedOperationException("NULLS NOT DISTINCT in UNIQUE is not supported");

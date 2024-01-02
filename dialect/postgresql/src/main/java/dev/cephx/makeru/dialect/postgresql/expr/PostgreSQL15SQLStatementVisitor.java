@@ -3,6 +3,7 @@ package dev.cephx.makeru.dialect.postgresql.expr;
 import dev.cephx.makeru.expr.InvalidExpressionDefinitionException;
 import dev.cephx.makeru.expr.StatementFormattingStrategy;
 import dev.cephx.makeru.expr.constraint.UniqueConstraintSQLExpression;
+import org.jetbrains.annotations.NotNull;
 
 public class PostgreSQL15SQLStatementVisitor extends PostgreSQL91SQLStatementVisitor {
     public PostgreSQL15SQLStatementVisitor(StatementFormattingStrategy strategy) {
@@ -11,7 +12,7 @@ public class PostgreSQL15SQLStatementVisitor extends PostgreSQL91SQLStatementVis
 
     // support NULLS NOT DISTINCT
     @Override
-    public void visitUniqueTableConstraint(UniqueConstraintSQLExpression expr) {
+    public void visitUniqueTableConstraint(@NotNull UniqueConstraintSQLExpression expr) {
         writeKeyword("unique ");
         if (!expr.isNullsDistinct()) {
             writeKeyword("nulls not distinct ");
@@ -26,7 +27,7 @@ public class PostgreSQL15SQLStatementVisitor extends PostgreSQL91SQLStatementVis
 
     // support NULLS NOT DISTINCT
     @Override
-    public void visitUniqueColumnConstraint(UniqueConstraintSQLExpression expr) {
+    public void visitUniqueColumnConstraint(@NotNull UniqueConstraintSQLExpression expr) {
         writeKeyword(" unique");
         if (!expr.isNullsDistinct()) {
             writeKeyword(" nulls not distinct");

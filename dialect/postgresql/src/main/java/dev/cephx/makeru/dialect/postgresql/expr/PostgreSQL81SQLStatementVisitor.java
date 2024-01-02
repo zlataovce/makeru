@@ -1,7 +1,6 @@
 package dev.cephx.makeru.dialect.postgresql.expr;
 
 import dev.cephx.makeru.expr.AbstractSQLStatementVisitor;
-import dev.cephx.makeru.expr.AmbiguousConstraintDefinitionException;
 import dev.cephx.makeru.expr.InvalidExpressionDefinitionException;
 import dev.cephx.makeru.expr.StatementFormattingStrategy;
 import dev.cephx.makeru.expr.constraint.*;
@@ -15,7 +14,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
 
     // support multiple tables
     @Override
-    public void visitDropTable(DropTableSQLExpression expr) {
+    public void visitDropTable(@NotNull DropTableSQLExpression expr) {
         writeKeyword("drop table ");
         if (!strategy.skipUnsupported() && expr.isIfExists()) {
             throw new UnsupportedOperationException("IF EXISTS in DROP TABLE is not supported");
@@ -51,13 +50,13 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
         return false;
     }
 
-    public void visitCheckColumnConstraint(CheckConstraintSQLExpression expr) {
+    public void visitCheckColumnConstraint(@NotNull CheckConstraintSQLExpression expr) {
         writeKeyword(" check (");
         write(expr.getExpression());
         write(")");
     }
 
-    public void visitForeignKeyColumnConstraint(ForeignKeyConstraintSQLExpression expr) {
+    public void visitForeignKeyColumnConstraint(@NotNull ForeignKeyConstraintSQLExpression expr) {
         writeKeyword(" references ");
         write(expr.getRefTable());
         write(" (");
@@ -79,7 +78,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
         }
     }
 
-    protected void visitForeignKeyReferentialAction(ForeignKeyConstraintSQLExpression.ReferentialAction action) {
+    protected void visitForeignKeyReferentialAction(@NotNull ForeignKeyConstraintSQLExpression.ReferentialAction action) {
         writeKeyword(action.getType().toString());
 
         if (!action.getColumns().isEmpty()) {
@@ -91,7 +90,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
                     write(")");
                 default:
                     if (!strategy.skipUnsupported()) {
-                        throw new AmbiguousConstraintDefinitionException("Column subset selection is only supported for SET NULL and SET DEFAULT");
+                        throw new UnsupportedOperationException("Column subset selection is only supported for SET NULL and SET DEFAULT");
                     }
             }
         }
@@ -101,7 +100,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
         writeKeyword(" primary key");
     }
 
-    public void visitUniqueColumnConstraint(UniqueConstraintSQLExpression expr) {
+    public void visitUniqueColumnConstraint(@NotNull UniqueConstraintSQLExpression expr) {
         writeKeyword(" unique");
         if (!strategy.skipUnsupported() && !expr.isNullsDistinct()) {
             throw new UnsupportedOperationException("NULLS NOT DISTINCT in UNIQUE is not supported");
@@ -110,7 +109,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
 
     // support referential action column subset selection
     @Override
-    public void visitForeignKeyTableConstraint(ForeignKeyConstraintSQLExpression expr) {
+    public void visitForeignKeyTableConstraint(@NotNull ForeignKeyConstraintSQLExpression expr) {
         writeKeyword("foreign key (");
         if (expr.getColumnNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one column must be specified in FOREIGN KEY");

@@ -16,11 +16,11 @@ import java.util.Objects;
 
 import static dev.cephx.makeru.jdbc.util.ExceptionUtil.sneakyThrow;
 
-public class JDBCResultSetBackedRow implements Row {
+public class ResultSetBackedRow implements Row {
     private final ResultSet resultSet;
     private final int id;
 
-    public JDBCResultSetBackedRow(@NotNull ResultSet resultSet) {
+    public ResultSetBackedRow(@NotNull ResultSet resultSet) {
         int id = -1; // always set
         try {
             id = resultSet.getRow();
@@ -206,7 +206,7 @@ public class JDBCResultSetBackedRow implements Row {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        JDBCResultSetBackedRow that = (JDBCResultSetBackedRow) o;
+        ResultSetBackedRow that = (ResultSetBackedRow) o;
         return id == that.id && Objects.equals(resultSet, that.resultSet);
     }
 

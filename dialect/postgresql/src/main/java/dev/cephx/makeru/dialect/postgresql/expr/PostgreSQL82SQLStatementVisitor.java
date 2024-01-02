@@ -3,6 +3,7 @@ package dev.cephx.makeru.dialect.postgresql.expr;
 import dev.cephx.makeru.expr.InvalidExpressionDefinitionException;
 import dev.cephx.makeru.expr.StatementFormattingStrategy;
 import dev.cephx.makeru.expr.table.DropTableSQLExpression;
+import org.jetbrains.annotations.NotNull;
 
 public class PostgreSQL82SQLStatementVisitor extends PostgreSQL81SQLStatementVisitor {
     public PostgreSQL82SQLStatementVisitor(StatementFormattingStrategy strategy) {
@@ -11,7 +12,7 @@ public class PostgreSQL82SQLStatementVisitor extends PostgreSQL81SQLStatementVis
 
     // support IF EXISTS
     @Override
-    public void visitDropTable(DropTableSQLExpression expr) {
+    public void visitDropTable(@NotNull DropTableSQLExpression expr) {
         writeKeyword("drop table ");
         if (expr.isIfExists()) {
             writeKeyword("if exists ");
