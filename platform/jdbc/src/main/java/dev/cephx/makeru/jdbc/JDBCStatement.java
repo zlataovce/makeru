@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Objects;
 
 import static dev.cephx.makeru.jdbc.util.ExceptionUtil.sneakyThrow;
+import static dev.cephx.makeru.util.Primitives.unwrap;
 
 public class JDBCStatement implements Statement {
     private final PreparedStatement preparedStatement;
@@ -147,24 +148,24 @@ public class JDBCStatement implements Statement {
 
     protected void bindNull0(int index, Class<?> type) throws SQLException {
         index++; // JDBC starts counting at 1, normalize
-        type = convertComplexType(type);
+        type = convertComplexType(unwrap(type));
 
         int sqlType;
-        if (type == boolean.class || type == Boolean.class) {
+        if (type == boolean.class) {
             sqlType = Types.BOOLEAN;
-        } else if (type == byte.class || type == Byte.class) {
+        } else if (type == byte.class) {
             sqlType = Types.TINYINT;
-        } else if (type == char.class || type == Character.class) {
+        } else if (type == char.class) {
             sqlType = Types.CHAR;
-        } else if (type == double.class || type == Double.class) {
+        } else if (type == double.class) {
             sqlType = Types.DOUBLE;
-        } else if (type == float.class || type == Float.class) {
+        } else if (type == float.class) {
             sqlType = Types.FLOAT;
-        } else if (type == int.class || type == Integer.class) {
+        } else if (type == int.class) {
             sqlType = Types.INTEGER;
-        } else if (type == long.class || type == Long.class) {
+        } else if (type == long.class) {
             sqlType = Types.BIGINT;
-        } else if (type == short.class || type == Short.class) {
+        } else if (type == short.class) {
             sqlType = Types.SMALLINT;
         } else if (type == byte[].class || type == Byte[].class) {
             sqlType = Types.VARBINARY;

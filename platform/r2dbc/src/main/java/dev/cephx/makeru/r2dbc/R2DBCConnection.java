@@ -3,7 +3,7 @@ package dev.cephx.makeru.r2dbc;
 import dev.cephx.makeru.reactor.ReactiveConnection;
 import io.r2dbc.spi.Connection;
 import org.jetbrains.annotations.NotNull;
-import org.reactivestreams.Publisher;
+import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
@@ -15,8 +15,8 @@ public class R2DBCConnection implements ReactiveConnection {
     }
 
     @Override
-    public @NotNull Publisher<Void> close() {
-        return connection.close();
+    public @NotNull Mono<Void> close() {
+        return Mono.from(connection.close());
     }
 
     @Override

@@ -1,6 +1,6 @@
 package dev.cephx.makeru.jdbc;
 
-import dev.cephx.makeru.Row;
+import dev.cephx.makeru.Readable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,12 +15,13 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 import static dev.cephx.makeru.jdbc.util.ExceptionUtil.sneakyThrow;
+import static dev.cephx.makeru.util.Primitives.unwrap;
 
-public class ResultSetBackedRow implements Row {
+public class ResultSetBackedReadable implements Readable {
     private final ResultSet resultSet;
     private final int id;
 
-    public ResultSetBackedRow(@NotNull ResultSet resultSet) {
+    public ResultSetBackedReadable(@NotNull ResultSet resultSet) {
         int id = -1; // always set
         try {
             id = resultSet.getRow();
@@ -90,21 +91,22 @@ public class ResultSetBackedRow implements Row {
     protected <T> T get0(int index, Class<T> type) throws SQLException {
         index++; // JDBC starts counting at 1, normalize
 
-        if (type == boolean.class || type == Boolean.class) {
+        type = unwrap(type);
+        if (type == boolean.class) {
             return (T) ((Boolean) resultSet.getBoolean(index));
-        } else if (type == byte.class || type == Byte.class) {
+        } else if (type == byte.class) {
             return (T) ((Byte) resultSet.getByte(index));
-        } else if (type == char.class || type == Character.class) {
+        } else if (type == char.class) {
             return (T) ((Character) resultSet.getString(index).charAt(0));
-        } else if (type == double.class || type == Double.class) {
+        } else if (type == double.class) {
             return (T) ((Double) resultSet.getDouble(index));
-        } else if (type == float.class || type == Float.class) {
+        } else if (type == float.class) {
             return (T) ((Float) resultSet.getFloat(index));
-        } else if (type == int.class || type == Integer.class) {
+        } else if (type == int.class) {
             return (T) ((Integer) resultSet.getInt(index));
-        } else if (type == long.class || type == Long.class) {
+        } else if (type == long.class) {
             return (T) ((Long) resultSet.getLong(index));
-        } else if (type == short.class || type == Short.class) {
+        } else if (type == short.class) {
             return (T) ((Short) resultSet.getShort(index));
         } else if (type == byte[].class || type == Byte[].class) {
             return (T) resultSet.getBytes(index);
@@ -137,21 +139,22 @@ public class ResultSetBackedRow implements Row {
 
     @SuppressWarnings("unchecked")
     protected <T> T get0(String name, Class<T> type) throws SQLException {
-        if (type == boolean.class || type == Boolean.class) {
+        type = unwrap(type);
+        if (type == boolean.class) {
             return (T) ((Boolean) resultSet.getBoolean(name));
-        } else if (type == byte.class || type == Byte.class) {
+        } else if (type == byte.class) {
             return (T) ((Byte) resultSet.getByte(name));
-        } else if (type == char.class || type == Character.class) {
+        } else if (type == char.class) {
             return (T) ((Character) resultSet.getString(name).charAt(0));
-        } else if (type == double.class || type == Double.class) {
+        } else if (type == double.class) {
             return (T) ((Double) resultSet.getDouble(name));
-        } else if (type == float.class || type == Float.class) {
+        } else if (type == float.class) {
             return (T) ((Float) resultSet.getFloat(name));
-        } else if (type == int.class || type == Integer.class) {
+        } else if (type == int.class) {
             return (T) ((Integer) resultSet.getInt(name));
-        } else if (type == long.class || type == Long.class) {
+        } else if (type == long.class) {
             return (T) ((Long) resultSet.getLong(name));
-        } else if (type == short.class || type == Short.class) {
+        } else if (type == short.class) {
             return (T) ((Short) resultSet.getShort(name));
         } else if (type == byte[].class || type == Byte[].class) {
             return (T) resultSet.getBytes(name);
@@ -206,7 +209,7 @@ public class ResultSetBackedRow implements Row {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ResultSetBackedRow that = (ResultSetBackedRow) o;
+        ResultSetBackedReadable that = (ResultSetBackedReadable) o;
         return id == that.id && Objects.equals(resultSet, that.resultSet);
     }
 

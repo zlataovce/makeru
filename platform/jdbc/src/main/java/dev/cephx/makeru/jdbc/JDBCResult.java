@@ -1,7 +1,6 @@
 package dev.cephx.makeru.jdbc;
 
 import dev.cephx.makeru.Result;
-import dev.cephx.makeru.Row;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
@@ -12,7 +11,7 @@ import java.util.Objects;
 
 import static dev.cephx.makeru.jdbc.util.ExceptionUtil.sneakyThrow;
 
-public class JDBCResult implements Result<ResultSetBackedRow> {
+public class JDBCResult implements Result<ResultSetBackedReadable> {
     private final ResultSet resultSet;
     private volatile boolean iterating = false;
 
@@ -21,7 +20,7 @@ public class JDBCResult implements Result<ResultSetBackedRow> {
     }
 
     @Override
-    public synchronized @NotNull Iterator<ResultSetBackedRow> iterator() {
+    public synchronized @NotNull Iterator<ResultSetBackedReadable> iterator() {
         try {
             if (resultSet.isClosed()) {
                 throw new IllegalStateException("Result set closed");
@@ -46,16 +45,6 @@ public class JDBCResult implements Result<ResultSetBackedRow> {
                 super.close();
             }
         };
-    }
-
-    @Override
-    public long count() {
-        int count = 0;
-        for (final Row ignored : this) {
-            count++;
-        }
-
-        return count;
     }
 
     @Override

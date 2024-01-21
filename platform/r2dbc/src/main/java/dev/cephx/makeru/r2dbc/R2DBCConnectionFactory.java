@@ -3,7 +3,6 @@ package dev.cephx.makeru.r2dbc;
 import dev.cephx.makeru.reactor.ReactiveConnectionFactory;
 import io.r2dbc.spi.ConnectionFactory;
 import org.jetbrains.annotations.NotNull;
-import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
@@ -12,11 +11,11 @@ public class R2DBCConnectionFactory implements ReactiveConnectionFactory {
     private final ConnectionFactory connectionFactory;
 
     public R2DBCConnectionFactory(@NotNull ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
+        this.connectionFactory = Objects.requireNonNull(connectionFactory, "connectionFactory");
     }
 
     @Override
-    public @NotNull Publisher<R2DBCConnection> create() {
+    public @NotNull Mono<R2DBCConnection> create() {
         return Mono.from(connectionFactory.create()).map(R2DBCConnection::new);
     }
 

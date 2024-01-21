@@ -5,6 +5,6 @@ plugins {
 
 dependencies {
     api(project(":core"))
-    api(libs.reactive.streams)
+    api(libs.reactor.core)
     compileOnly(libs.jb.annotations)
 }

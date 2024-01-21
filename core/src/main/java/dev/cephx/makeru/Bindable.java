@@ -3,7 +3,7 @@ package dev.cephx.makeru;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public interface StatementLike<T extends StatementLike<T>> {
+public interface Bindable<T extends Bindable<T>> {
     @Contract("-> this")
     @NotNull
     T add();

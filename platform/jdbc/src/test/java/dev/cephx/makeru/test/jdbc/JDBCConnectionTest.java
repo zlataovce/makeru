@@ -2,7 +2,7 @@ package dev.cephx.makeru.test.jdbc;
 
 import dev.cephx.makeru.Connection;
 import dev.cephx.makeru.Result;
-import dev.cephx.makeru.Row;
+import dev.cephx.makeru.Readable;
 import dev.cephx.makeru.jdbc.JDBCConnectionFactory;
 import org.junit.jupiter.api.Test;
 
@@ -21,22 +21,22 @@ public class JDBCConnectionTest {
                     .bind(1, "JDBC test") // test
                     .execute();
 
-            final Iterable<? extends Result<? extends Row>> results = conn.createStatement("SELECT * FROM test;").executeAsQuery();
+            final Iterable<? extends Result<? extends Readable>> results = conn.createStatement("SELECT * FROM test;").executeAsQuery();
 
             boolean readOneResult = false;
-            for (final Result<? extends Row> result : results) {
+            for (final Result<? extends Readable> result : results) {
                 assertFalse(readOneResult, "already read one result");
 
                 readOneResult = true;
                 assertEquals(1, result.count());
 
                 boolean readOneRow = false;
-                for (final Row row : result) {
+                for (final Readable readable : result) {
                     assertFalse(readOneRow, "already read one row");
 
                     readOneRow = true;
-                    assertEquals(0, row.get(0, int.class)); // id
-                    assertEquals("JDBC test", row.get(1, String.class)); // test
+                    assertEquals(0, readable.get(0, int.class)); // id
+                    assertEquals("JDBC test", readable.get(1, String.class)); // test
                 }
 
                 assertTrue(readOneRow, "read no rows");

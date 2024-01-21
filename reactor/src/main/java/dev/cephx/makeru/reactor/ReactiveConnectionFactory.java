@@ -1,9 +1,9 @@
 package dev.cephx.makeru.reactor;
 
 import org.jetbrains.annotations.NotNull;
-import org.reactivestreams.Publisher;
+import reactor.core.publisher.Mono;
 
 public interface ReactiveConnectionFactory {
     @NotNull
-    Publisher<? extends ReactiveConnection> create();
+    Mono<? extends ReactiveConnection> create();
 }

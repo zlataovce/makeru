@@ -3,12 +3,12 @@ package dev.cephx.makeru.r2dbc;
 import dev.cephx.makeru.reactor.ReactiveResult;
 import io.r2dbc.spi.Result;
 import org.jetbrains.annotations.NotNull;
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
-public class R2DBCResult implements ReactiveResult<R2DBCRow> {
+public class R2DBCResult implements ReactiveResult<R2DBCReadable> {
     private final Result result;
 
     public R2DBCResult(@NotNull Result result) {
@@ -16,13 +16,13 @@ public class R2DBCResult implements ReactiveResult<R2DBCRow> {
     }
 
     @Override
-    public void subscribe(Subscriber<? super R2DBCRow> s) {
-        result.map(R2DBCRow::new).subscribe(s);
+    public @NotNull Flux<R2DBCReadable> flux() {
+        return Flux.from(result.map(R2DBCReadable::new));
     }
 
     @Override
-    public @NotNull Publisher<Long> count() {
-        return result.getRowsUpdated();
+    public @NotNull Mono<Long> count() {
+        return Mono.from(result.getRowsUpdated());
     }
 
     public @NotNull Result getResult() {

@@ -1,15 +1,16 @@
 package dev.cephx.makeru.reactor;
 
-import dev.cephx.makeru.Row;
-import dev.cephx.makeru.StatementLike;
+import dev.cephx.makeru.Readable;
+import dev.cephx.makeru.Bindable;
 import org.jetbrains.annotations.NotNull;
-import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-public interface ReactiveStatement extends StatementLike<ReactiveStatement> {
+public interface ReactiveStatement extends Bindable<ReactiveStatement> {
     @NotNull
-    Publisher<Void> execute();
+    Mono<Void> execute();
     @NotNull
-    Publisher<? extends ReactiveResult<? extends Row>> executeAsQuery();
+    Flux<? extends ReactiveResult<? extends Readable>> executeAsQuery();
     @NotNull
-    Publisher<Long> executeAsUpdate();
+    Mono<Long> executeAsUpdate();
 }

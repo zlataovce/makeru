@@ -11,7 +11,7 @@ import java.util.Objects;
 
 import static dev.cephx.makeru.jdbc.util.ExceptionUtil.sneakyThrow;
 
-public class ResultSetRowIterator implements Iterator<ResultSetBackedRow>, Closeable {
+public class ResultSetRowIterator implements Iterator<ResultSetBackedReadable>, Closeable {
     private final ResultSet resultSet;
     private boolean closed = false;
 
@@ -23,12 +23,12 @@ public class ResultSetRowIterator implements Iterator<ResultSetBackedRow>, Close
     }
 
     @Override
-    public synchronized ResultSetBackedRow next() {
+    public synchronized ResultSetBackedReadable next() {
         if (!hasNext()) {
             throw new NoSuchElementException("next");
         }
         doNext = true;
-        return new ResultSetBackedRow(resultSet);
+        return new ResultSetBackedReadable(resultSet);
     }
 
     @Override

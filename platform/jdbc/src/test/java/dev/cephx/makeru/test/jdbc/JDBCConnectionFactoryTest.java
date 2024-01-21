@@ -14,9 +14,7 @@ public class JDBCConnectionFactoryTest {
 
     public static DataSource makeDataSource() {
         final JdbcDataSource h2Source = new JdbcDataSource();
-        h2Source.setUrl("jdbc:h2:./test");
-        h2Source.setUser("sa");
-        h2Source.setPassword("sa");
+        h2Source.setUrl("jdbc:h2:mem:test-jdbc");
 
         return h2Source;
     }

@@ -3,7 +3,7 @@ package dev.cephx.makeru;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface Row {
+public interface Readable {
     @Nullable
     Object get(int index);
     @Nullable
