@@ -21,7 +21,7 @@ public class PostgreSQL15SQLStatementVisitor extends PostgreSQL91SQLStatementVis
         if (expr.getColumnNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one column must be specified in UNIQUE");
         }
-        write(String.join(", ", expr.getColumnNames()));
+        writeDelimited(expr.getColumnNames());
         write(")");
     }
 

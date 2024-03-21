@@ -8,6 +8,7 @@ import reactor.core.publisher.Mono;
 public interface ReactiveResult<R extends Readable> {
     @NotNull
     Flux<R> flux();
+
     default @NotNull Mono<Long> count() {
         return flux().count();
     }

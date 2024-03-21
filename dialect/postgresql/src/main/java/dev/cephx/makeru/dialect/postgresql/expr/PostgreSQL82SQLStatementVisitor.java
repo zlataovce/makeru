@@ -20,7 +20,7 @@ public class PostgreSQL82SQLStatementVisitor extends PostgreSQL81SQLStatementVis
         if (expr.getTableNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one table must be specified in DROP TABLE");
         }
-        write(String.join(", ", expr.getTableNames()));
+        writeDelimited(expr.getTableNames());
         if (expr.getAction() != null) {
             writeKeyword(" " + expr.getAction());
         }

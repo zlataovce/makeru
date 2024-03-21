@@ -6,11 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface ReactiveStatement extends Bindable<ReactiveStatement> {
-    @NotNull
-    Mono<Void> execute();
+public interface ReactiveStatement extends Executable, Bindable<ReactiveStatement> {
     @NotNull
     Flux<? extends ReactiveResult<? extends Readable>> executeAsQuery();
+
     @NotNull
     Mono<Long> executeAsUpdate();
 }

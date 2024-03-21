@@ -5,6 +5,7 @@ import dev.cephx.makeru.expr.table.CreateTableSQLExpression;
 import dev.cephx.makeru.expr.table.DropTableSQLExpression;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor {
@@ -19,6 +20,20 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
 
     protected void write(@NotNull String s) {
         _builder.append(s);
+    }
+
+    protected void writeDelimited(@NotNull Iterable<String> elements) {
+        writeDelimited(", ", elements);
+    }
+
+    protected void writeDelimited(@NotNull String delimiter, @NotNull Iterable<String> elements) {
+        for (final Iterator<String> iterator = elements.iterator(); iterator.hasNext(); ) {
+            write(iterator.next());
+
+            if (iterator.hasNext()) {
+                write(delimiter);
+            }
+        }
     }
 
     protected void writeKeyword(@NotNull String s) {
@@ -196,14 +211,14 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         if (expr.getColumnNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one column must be specified in FOREIGN KEY");
         }
-        write(String.join(", ", expr.getColumnNames()));
+        writeDelimited(expr.getColumnNames());
         writeKeyword(") references ");
         write(expr.getRefTable());
         write(" (");
         if (expr.getRefColumns().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one foreign column must be specified in FOREIGN KEY");
         }
-        write(String.join(", ", expr.getRefColumns()));
+        writeDelimited(expr.getRefColumns());
         write(")");
 
         final ForeignKeyConstraintSQLExpression.ReferentialAction onUpdate = expr.getOnUpdate();
@@ -231,7 +246,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         if (expr.getColumnNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one column must be specified in PRIMARY KEY");
         }
-        write(String.join(", ", expr.getColumnNames()));
+        writeDelimited(expr.getColumnNames());
         write(")");
     }
 
@@ -244,7 +259,7 @@ public abstract class AbstractSQLStatementVisitor implements SQLStatementVisitor
         if (expr.getColumnNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one column must be specified in UNIQUE");
         }
-        write(String.join(", ", expr.getColumnNames()));
+        writeDelimited(expr.getColumnNames());
         write(")");
     }
 

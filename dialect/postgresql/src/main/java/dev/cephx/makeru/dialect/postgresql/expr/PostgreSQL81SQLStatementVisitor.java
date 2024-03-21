@@ -22,7 +22,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
         if (expr.getTableNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one table must be specified in DROP TABLE");
         }
-        write(String.join(", ", expr.getTableNames()));
+        writeDelimited(expr.getTableNames());
         if (expr.getAction() != null) {
             writeKeyword(" " + expr.getAction());
         }
@@ -63,7 +63,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
         if (expr.getRefColumns().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one foreign column must be specified in FOREIGN KEY");
         }
-        write(String.join(", ", expr.getRefColumns()));
+        writeDelimited(expr.getRefColumns());
         write(")");
 
         final ForeignKeyConstraintSQLExpression.ReferentialAction onUpdate = expr.getOnUpdate();
@@ -86,7 +86,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
                 case SET_NULL:
                 case SET_DEFAULT:
                     write(" (");
-                    write(String.join(", ", action.getColumns()));
+                    writeDelimited(action.getColumns());
                     write(")");
                 default:
                     if (!strategy.skipUnsupported()) {
@@ -114,14 +114,14 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
         if (expr.getColumnNames().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one column must be specified in FOREIGN KEY");
         }
-        write(String.join(", ", expr.getColumnNames()));
+        writeDelimited(expr.getColumnNames());
         writeKeyword(") references ");
         write(expr.getRefTable());
         write(" (");
         if (expr.getRefColumns().isEmpty()) {
             throw new InvalidExpressionDefinitionException("At least one foreign column must be specified in FOREIGN KEY");
         }
-        write(String.join(", ", expr.getRefColumns()));
+        writeDelimited(expr.getRefColumns());
         write(")");
 
         final ForeignKeyConstraintSQLExpression.ReferentialAction onUpdate = expr.getOnUpdate();
@@ -131,7 +131,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
 
             if (!onUpdate.getColumns().isEmpty()) {
                 write(" (");
-                write(String.join(", ", onUpdate.getColumns()));
+                writeDelimited(onUpdate.getColumns());
                 write(")");
             }
         }
@@ -142,7 +142,7 @@ public class PostgreSQL81SQLStatementVisitor extends AbstractSQLStatementVisitor
 
             if (!onDelete.getColumns().isEmpty()) {
                 write(" (");
-                write(String.join(", ", onDelete.getColumns()));
+                writeDelimited(onDelete.getColumns());
                 write(")");
             }
         }
